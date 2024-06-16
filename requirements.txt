@@ -10,3 +10,4 @@ MarkupSafe==2.1.5
 SQLAlchemy==2.0.30
 typing_extensions==4.12.2
 Werkzeug==3.0.3
+Flask-Login==0.6.3

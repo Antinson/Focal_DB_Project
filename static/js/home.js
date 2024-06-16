@@ -18,8 +18,8 @@ async function createChart() {
             datasets: [{
                 label: 'Camera Status',
                 data: data.values,
-                backgroundColor: ['#FF6384', '#36A2EB'],
-                hoverBackgroundColor: ['#FF6384', '#36A2EB']
+                backgroundColor: ['#36A2EB', '#FF6384'],
+                hoverBackgroundColor: ['#36A2EB', '#FF6384']
             }]
         },
         options: {

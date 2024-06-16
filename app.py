@@ -43,9 +43,14 @@ def login():
     return render_template('login.html')
 
 @app.route('/')
+@login_required
 def home():
     return render_template('home.html', username=current_user.username, role=current_user.role)
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    # Redirect unauthorized users to the login page
+    return redirect(url_for('login'))
 
 @app.route('/user_dashboard/<username>')
 @login_required
@@ -92,8 +97,7 @@ def add_camera():
     camera_name = data.get('cameraid')
     status = data.get('status').lower()
 
-    existing_camera = Camera.query.filter_by(name=camera_name, user_id=current_user.id).first()
-
+    existing_camera = Camera.query.filter_by(name=camera_name).first()
     if existing_camera:
         if existing_camera.status != status:
             existing_camera.status = status

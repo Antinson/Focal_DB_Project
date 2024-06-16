@@ -14,6 +14,7 @@
             <span id="toggleLabel" class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Working</span>
         </label>
     </div>
+    <div id="messagePopup" class="hidden p-3 mt-2 text-sm text-white bg-blue-600 rounded-lg"></div>
 </div>
 
 <script>
@@ -32,6 +33,16 @@
     function getLabelText() {
         const label = document.getElementById('toggleLabel');
         return label.textContent;
+    }
+
+    function showMessage(message, isSuccess, color) {
+        const popup = document.getElementById('messagePopup');
+        popup.textContent = message;
+        popup.style.backgroundColor = color;        
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 3000);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -75,9 +86,17 @@
                 .then(data => {
                     cameraInput.value = '';
                     console.log('Success:', data);
+                    if (data.message == "Camera added successfully") {
+                        showMessage(data.message, true, 'green');
+                    } else if (data.message == "Camera already exists", true, 'blue') {
+                        showMessage(data.message, false);
+                    } else {
+                        showMessage("Failed: " + data.message, false, 'red');
+                    }
                 })
                 .catch((error) => {
                     console.error('Error:', error);
+                    showMessage(`Failed: ${error.message}`, false, 'red');
                 });
             }
         });
