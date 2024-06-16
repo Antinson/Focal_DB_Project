@@ -39,4 +39,35 @@ async function createChart() {
     )
 }
 
-document.addEventListener('DOMContentLoaded', createChart);
+async function fetchUserList() {
+    const response = await fetch('/getuserlist', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+        redirect: 'follow'
+    });
+    const data = await response.json();
+    return data;
+}
+
+async function populateUserList() {
+    const users = await fetchUserList();
+    console.log(users);
+    const userList = document.getElementById('user-list');
+    users.forEach(user => {
+        console.log(user)
+        const userLink = document.createElement('a');
+        userLink.href = `/user_dashboard/${user.username}`;
+        userLink.textContent = user.username;
+        userList.appendChild(userLink);
+    });
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    createChart();
+    populateUserList();
+});

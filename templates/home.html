@@ -3,12 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>My Flask App with Tailwind CSS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-built.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.8.3"></script>
 </head>
-<body>
-    <h1 class="text-3xl font-bold underline">
-        Hello world!
-    </h1>
+<body class="bg-gray-100 text-gray-900">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-4">
+                    <div>
+                        <h1 class="font-bold text-4xl object-center">Focal Db App</span>
+                    </div>
+                </div>
+                <!-- Primary Nav -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Home</a>
+                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Add Camera</a>
+                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Logout</a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="mobile-menu-button">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="mobile-menu hidden md:hidden">
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Home</a>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Add Camera</a>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
+        <div id="chart-container" class="grid grid-cols-2 gap-4 w-full h-auto">
+            <div class="bg-green-500 p-4 flex flex-col justify-center items-center">
+                <h2 class="text-xl font-semibold text-center mb-4">Cameras</h2> <!-- Title for the first column -->
+                <div class="flex justify-center items-center">
+                    <canvas id="myPieChart" class="w-full max-w-xs h-auto"></canvas>
+                </div>            
+            </div>
+            <div class="bg-green-500 p-4">
+                <h2 class="text-xl font-semibold text-center">User List</h2> <!-- Title for the first column -->
+                <div id="user-list" class="flex flex-col items-center">
+                    <!-- User list will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const btn = document.querySelector('button.mobile-menu-button');
+        const menu = document.querySelector('.mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
 </body>
 </html>

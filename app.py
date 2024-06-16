@@ -146,6 +146,11 @@ def get_cameras():
     cameras = Camera.query.all()
     return jsonify([{"id": camera.name, "status": camera.status, "user_id": camera.user_id, "storage": camera.storage} for camera in cameras])
 
+@app.route('/getuserlist', methods=['GET'])
+def get_user_list():
+    print('Here')
+    users = User.query.all()
+    return jsonify([{"id": user.id, "username": user.username, "role": user.role} for user in users])
 
 if __name__ == '__main__':
     with app.app_context():
