@@ -19,7 +19,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(50), nullable=False)
 
 class Camera(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), primary_key=True)
     status = db.Column(db.String(10), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     storage = db.Column(db.String(120), nullable=False)
@@ -54,7 +54,33 @@ def profile():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', username=current_user.username)
+    camera_count = Camera.query.filter_by(user_id=current_user.id).count()
+    return render_template('dashboard.html', username=current_user.username, camera_count=camera_count)
+
+@app.route('/admin_dashboard')
+@login_required
+def admin_dashboard():
+    # Check if the current user is an admin
+    if current_user.role != 'admin':
+        return redirect(url_for('dashboard'))
+
+    users = User.query.all()
+    return render_template('admin_dashboard.html', users=users)
+
+@app.route('/user_dashboard/<username>')
+@login_required
+def user_dashboard(username):
+    # Check if the current user is an admin
+    if current_user.role != 'admin':
+        return redirect(url_for('dashboard'))
+
+    user = User.query.filter_by(username=username).first_or_404()
+    camera_count = Camera.query.filter_by(user_id=user.id).count()
+    camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
+    camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
+
+    return render_template('user_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working)
+
 
 @app.route('/logout')
 @login_required
@@ -78,25 +104,28 @@ def editcamera():
 @app.route('/api/addcamera', methods=['POST'])
 def add_camera():
     data = request.json
-    data['status'] = 'working'
-    camera_id = data.get('cameraid')
-    # Add your logic to handle the camera ID (e.g., save it to the database)
-    return jsonify({"message": "Camera added", "cameraid": camera_id})
+    camera_name = data.get('cameraid')
+    
+    new_camera = Camera(name = camera_name, status='working', user_id=current_user.id, storage=current_user.username)
+    db.session.add(new_camera)
+    db.session.commit()
+
+    return jsonify({"message": "Camera added", "cameraid": camera_name})
 
 @app.route('/api/addbrokencamera', methods=['POST'])
 def add_broken_camera():
     data = request.json
-    camera_id = data.get('cameraid')
-    # Add your logic to handle the camera ID (e.g., save it to the database)
-    new_camera = Camera(status='broken', user_id=current_user.id, storage=current_user.username)
+    camera_name = data.get('cameraid')
+
+    new_camera = Camera(name = camera_name, status='broken', user_id=current_user.id, storage=current_user.username)
     db.session.add(new_camera)
     db.session.commit()
 
-    return jsonify({"message": "Camera added", "cameraid": camera_id})
+    return jsonify({"message": "Camera added", "cameraid": camera_name})
 
 @app.route('/addusertodb', methods=['GET'])
 def add_user():
-    user = User(username='ant', password='ant', role='normal')
+    user = User(username='another', password='test', role='normal')
     db.session.add(user)
     db.session.commit()
     return jsonify({"message": "User added"})
@@ -104,7 +133,7 @@ def add_user():
 @app.route('/getcameras', methods=['GET'])
 def get_cameras():
     cameras = Camera.query.all()
-    return jsonify([{"id": camera.id, "status": camera.status, "user_id": camera.user_id, "storage": camera.storage} for camera in cameras])
+    return jsonify([{"id": camera.name, "status": camera.status, "user_id": camera.user_id, "storage": camera.storage} for camera in cameras])
 
 
 if __name__ == '__main__':

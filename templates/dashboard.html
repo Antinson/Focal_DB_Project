@@ -6,6 +6,9 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <h1>Dashboard Page</h1>
+    <h1>Welcome, {{ username }}</h1>
+    <p>You have {{ camera_count }} cameras.</p>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
+
