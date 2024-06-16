@@ -81,6 +81,17 @@ def user_dashboard(username):
 
     return render_template('user_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working)
 
+@app.route('/pie', methods=['GET'])
+def pie():
+    user = User.query.filter_by(username='ant').first_or_404()
+    camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
+    camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
+
+    data = {
+        "labels": ["Working", "Not Working"],
+        "values": [camera_count_working, camera_count_not_working]
+    }
+    return jsonify(data)
 
 @app.route('/logout')
 @login_required
