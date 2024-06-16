@@ -43,18 +43,24 @@
             color: white;
             font-size: 16px;
         }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h1>Login</h1>
-        <form action="/login" method="post">
+        <form id="loginForm">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <button type="submit">Login</button>
         </form>
+        <div class="error" id="errorMessage"></div>
     </div>
+    <script src="{{ url_for('static', filename='login.js') }}"></script>
 </body>
 </html>
