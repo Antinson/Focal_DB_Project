@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const cameraInput = document.getElementById('cameraid');
+    const toast = document.getElementById('toast');
+
 
     cameraInput.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
@@ -11,22 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Create the POST request
             fetch('api/addcamera', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ cameraid: cameraId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response data
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        cameraid: cameraId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    cameraInput.value = '';
+                    showToast(data.message);
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    showToast('An error occurred while adding the camera.');
+                });
         }
     });
-});
 
-console.log('Hey')
+    function showToast(message) {
+        toast.textContent = message;
+        toast.className = "show";
+        setTimeout(() => {
+            toast.className = toast.className.replace("show", "");
+        }, 3000);
+    }
+});

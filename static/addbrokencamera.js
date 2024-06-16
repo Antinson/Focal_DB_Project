@@ -19,11 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                // Handle the response data
+                cameraInput.value = '';
+                alert(data.message);                
                 console.log('Success:', data);
             })
             .catch((error) => {
                 console.error('Error:', error);
+                alert('An error occurred while adding the camera.');
             });
         }
     });
