@@ -6,14 +6,14 @@
     <div class="container mx-auto p-4">
         <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
         <div id="chart-container" class="grid grid-cols-2 gap-4 w-full h-auto">
-            <div class="bg-green-500 p-4 flex flex-col justify-center items-center">
+            <div class="p-4 flex flex-col justify-center items-center bg-gray-50">
                 <h2 class="text-xl font-semibold text-center mb-4">My Cameras</h2> <!-- Title for the first column -->
                 <div class="flex justify-center items-center">
                     <canvas id="myPieChart" class="w-full max-w-xs h-auto"></canvas>
                 </div>            
             </div>
             {% if role == 'admin' %}
-            <div class="bg-green-500 p-4">
+            <div class="p-4 bg-gray-50">
                 <h2 class="text-xl font-semibold text-center">User List</h2> <!-- Title for the first column -->
                 <div id="user-list" class="flex flex-col items-center">
                     <!-- User list will be populated here -->

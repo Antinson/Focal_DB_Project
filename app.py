@@ -64,7 +64,6 @@ def user_dashboard(username):
 
 @app.route('/pie/<username>', methods=['GET'])
 def pie(username):
-    print('We are in pie')
     user = User.query.filter_by(username=username).first_or_404()
     camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
     camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
@@ -85,25 +84,28 @@ def logout():
 def add_camera_view():
     return render_template('addcamera.html')
 
-@app.route('/addbrokencamera')
-def add_broken_camera_view():
-    return render_template('addbrokencamera.html')
-
-@app.route('/editcamera')
-def editcamera():
-    return render_template('editcamera.html')
-
 
 @app.route('/api/addcamera', methods=['POST'])
 def add_camera():
     data = request.json
+    print(data)
     camera_name = data.get('cameraid')
-    
-    new_camera = Camera(name = camera_name, status='working', user_id=current_user.id, storage=current_user.username)
-    db.session.add(new_camera)
-    db.session.commit()
+    status = data.get('status').lower()
 
-    return jsonify({"message": "Camera added", "cameraid": camera_name})
+    existing_camera = Camera.query.filter_by(name=camera_name, user_id=current_user.id).first()
+
+    if existing_camera:
+        if existing_camera.status != status:
+            existing_camera.status = status
+            db.session.commit()
+            return jsonify({"message": "Camera updated", "cameraid": camera_name})
+        else:
+            return jsonify({"message": "Camera already exists", "cameraid": camera_name})
+    else:
+        new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username)
+        db.session.add(new_camera)
+        db.session.commit()
+        return jsonify({"message": "Camera added", "cameraid": camera_name})
 
 @app.route('/api/addbrokencamera', methods=['POST'])
 def add_broken_camera():
