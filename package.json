@@ -1,0 +1,21 @@
+{
+  "name": "focal_db_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx tailwindcss build static/css/tailwind.css -o static/css/tailwind-built.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Antinson/Focal_DB_Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Antinson/Focal_DB_Project/issues"
+  },
+  "homepage": "https://github.com/Antinson/Focal_DB_Project#readme"
+}
