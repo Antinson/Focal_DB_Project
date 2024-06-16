@@ -46,40 +46,31 @@ def login():
 def home():
     return render_template('home.html')
 
-@app.route('/profile')
-def profile():
-    return render_template('profile.html')
-
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    camera_count = Camera.query.filter_by(user_id=current_user.id).count()
-    return render_template('dashboard.html', username=current_user.username, camera_count=camera_count)
-
 @app.route('/admin_dashboard')
 @login_required
 def admin_dashboard():
     # Check if the current user is an admin
     if current_user.role != 'admin':
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('home'))
 
     users = User.query.all()
     return render_template('admin_dashboard.html', users=users)
 
+
 @app.route('/user_dashboard/<username>')
 @login_required
 def user_dashboard(username):
-    # Check if the current user is an admin
-    if current_user.role != 'admin':
-        return redirect(url_for('dashboard'))
 
+    if current_user.role != 'admin':
+        return redirect(url_for('home'))
+    
     user = User.query.filter_by(username=username).first_or_404()
     camera_count = Camera.query.filter_by(user_id=user.id).count()
     camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
     camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
 
-    return render_template('user_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working)
+    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working) 
+
 
 @app.route('/pie', methods=['GET'])
 def pie():
@@ -151,6 +142,10 @@ def get_user_list():
     print('Here')
     users = User.query.all()
     return jsonify([{"id": user.id, "username": user.username, "role": user.role} for user in users])
+
+
+
+
 
 if __name__ == '__main__':
     with app.app_context():

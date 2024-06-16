@@ -1,58 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Camera</title>
-    <style>
-        /* Toast notification styles */
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 5px;
-            position: fixed;
-            z-index: 1;
-            left: 50%;
-            bottom: 30px;
-            font-size: 17px;
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="flex items-center flex-col my-4">
+    <h1 class="text-4xl font-bold my-6 py-5">Add a Camera</h1>
+    <div class="w-full max-w-xs">
+        <input type="text" placeholder="XX:XX:XXXX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2">
+    </div>
+    <div class="py-5">
+        <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" value="" class="sr-only peer" checked onclick="toggleLabelText()">
+            <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span id="toggleLabel" class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Working</span>
+        </label>
+    </div>
+</div>
+
+<script>
+    function toggleLabelText() {
+            const checkbox = document.querySelector('.peer');
+            const label = document.getElementById('toggleLabel');
+            if (checkbox.checked) {
+                label.textContent = 'Broken';
+            } else {
+                label.textContent = 'Working';
+            }
         }
 
-        #toast.show {
-            visibility: visible;
-            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
+        // Initialize the label text based on the initial state of the checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleLabelText();
+        });
+</script>
 
-        @-webkit-keyframes fadein {
-            from {bottom: 0; opacity: 0;} 
-            to {bottom: 30px; opacity: 1;}
-        }
 
-        @keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
-        }
+{% endblock %}
 
-        @-webkit-keyframes fadeout {
-            from {bottom: 30px; opacity: 1;} 
-            to {bottom: 0; opacity: 0;}
-        }
+{% block title %}
 
-        @keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
-        }
-    </style>
-</head>
-<body>
-    <h1>Add Camera Page</h1>
-    <input type="text" id="cameraid" name="cameraid" required>
-    <div id="toast"></div>
-    <script src="{{ url_for('static', filename='js/addcamera.js') }}"></script>
-</body>
-</html>
-
+{% endblock %}

@@ -15,7 +15,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Login successful') {
-            window.location.href = '/dashboard';
+            window.location.href = '/';
         } else {
             document.getElementById('errorMessage').innerText = data.message;
         }

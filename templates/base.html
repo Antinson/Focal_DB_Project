@@ -19,9 +19,9 @@
                 </div>
                 <!-- Primary Nav -->
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Home</a>
-                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Add Camera</a>
-                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Logout</a>
+                    <a href="{{ url_for('home') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Home</a>
+                    <a href="{{ url_for('add_camera_view') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Add Camera</a>
+                    <a href="{{ url_for('logout') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Logout</a>
                 </div>
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
@@ -41,23 +41,7 @@
         </div>
     </nav>
 
-    <div class="container mx-auto p-4">
-        <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
-        <div id="chart-container" class="grid grid-cols-2 gap-4 w-full h-auto">
-            <div class="bg-green-500 p-4 flex flex-col justify-center items-center">
-                <h2 class="text-xl font-semibold text-center mb-4">My Cameras</h2> <!-- Title for the first column -->
-                <div class="flex justify-center items-center">
-                    <canvas id="myPieChart" class="w-full max-w-xs h-auto"></canvas>
-                </div>            
-            </div>
-            <div class="bg-green-500 p-4">
-                <h2 class="text-xl font-semibold text-center">User List</h2> <!-- Title for the first column -->
-                <div id="user-list" class="flex flex-col items-center">
-                    <!-- User list will be populated here -->
-                </div>
-            </div>
-        </div>
-    </div>
+    {% block content %}{% endblock %}
 
     <script>
         // Mobile menu toggle
@@ -69,5 +53,6 @@
         });
     </script>
     <script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
+
 </body>
 </html>
