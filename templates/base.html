@@ -41,6 +41,8 @@
         </div>
     </nav>
 
+    <input type="hidden" id="username" value="{{ username }}">
+
     {% block content %}{% endblock %}
 
     <script>
@@ -52,7 +54,7 @@
             menu.classList.toggle('hidden');
         });
     </script>
-    <script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 
 </body>
 </html>

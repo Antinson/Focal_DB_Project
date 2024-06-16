@@ -44,23 +44,13 @@ def login():
 
 @app.route('/')
 def home():
-    return render_template('home.html')
-
-@app.route('/admin_dashboard')
-@login_required
-def admin_dashboard():
-    # Check if the current user is an admin
-    if current_user.role != 'admin':
-        return redirect(url_for('home'))
-
-    users = User.query.all()
-    return render_template('admin_dashboard.html', users=users)
+    return render_template('home.html', username=current_user.username, role=current_user.role)
 
 
 @app.route('/user_dashboard/<username>')
 @login_required
 def user_dashboard(username):
-
+    
     if current_user.role != 'admin':
         return redirect(url_for('home'))
     
@@ -72,9 +62,10 @@ def user_dashboard(username):
     return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working) 
 
 
-@app.route('/pie', methods=['GET'])
-def pie():
-    user = User.query.filter_by(username='ant').first_or_404()
+@app.route('/pie/<username>', methods=['GET'])
+def pie(username):
+    print('We are in pie')
+    user = User.query.filter_by(username=username).first_or_404()
     camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
     camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
 
@@ -139,7 +130,6 @@ def get_cameras():
 
 @app.route('/getuserlist', methods=['GET'])
 def get_user_list():
-    print('Here')
     users = User.query.all()
     return jsonify([{"id": user.id, "username": user.username, "role": user.role} for user in users])
 
