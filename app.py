@@ -24,6 +24,33 @@ class Camera(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     storage = db.Column(db.String(120), nullable=False)
 
+
+# Views
+@app.route('/')
+@login_required
+def home():
+    return render_template('home.html', username=current_user.username, role=current_user.role)
+
+@app.route('/user_dashboard/<username>')
+@login_required
+def user_dashboard(username):
+    
+    if current_user.role != 'admin':
+        return redirect(url_for('home'))
+    
+    user = User.query.filter_by(username=username).first_or_404()
+    camera_count = Camera.query.filter_by(user_id=user.id).count()
+    camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
+    camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
+
+    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working) 
+
+@app.route('/addcamera')
+def add_camera_view():
+    return render_template('addcamera.html')
+
+
+# Login Stuff
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -42,31 +69,20 @@ def login():
             return jsonify({"message": "Invalid credentials"})
     return render_template('login.html')
 
-@app.route('/')
-@login_required
-def home():
-    return render_template('home.html', username=current_user.username, role=current_user.role)
 
 @login_manager.unauthorized_handler
 def unauthorized():
     # Redirect unauthorized users to the login page
     return redirect(url_for('login'))
 
-@app.route('/user_dashboard/<username>')
+@app.route('/logout')
 @login_required
-def user_dashboard(username):
-    
-    if current_user.role != 'admin':
-        return redirect(url_for('home'))
-    
-    user = User.query.filter_by(username=username).first_or_404()
-    camera_count = Camera.query.filter_by(user_id=user.id).count()
-    camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
-    camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+ 
 
-    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working) 
-
-
+# API Stuff
 @app.route('/pie/<username>', methods=['GET'])
 def pie(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -78,17 +94,6 @@ def pie(username):
         "values": [camera_count_working, camera_count_not_working]
     }
     return jsonify(data)
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
-@app.route('/addcamera')
-def add_camera_view():
-    return render_template('addcamera.html')
-
 
 @app.route('/api/addcamera', methods=['POST'])
 def add_camera():
@@ -122,6 +127,7 @@ def add_broken_camera():
 
     return jsonify({"message": "Camera added", "cameraid": camera_name})
 
+# Admin Stuff
 @app.route('/addusertodb', methods=['GET'])
 def add_user():
     user = User(username='another', password='test', role='normal')
@@ -138,9 +144,6 @@ def get_cameras():
 def get_user_list():
     users = User.query.all()
     return jsonify([{"id": user.id, "username": user.username, "role": user.role} for user in users])
-
-
-
 
 
 if __name__ == '__main__':
