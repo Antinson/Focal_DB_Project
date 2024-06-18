@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    <div class="container mx-auto p-4">
+    <div id = "div-container-to-get" class="container mx-auto p-4">
         <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
         <div id="chart-container" class="grid grid-cols-2 gap-4 w-full h-auto">
             <div class="p-4 flex flex-col justify-center items-center bg-gray-50">
@@ -19,22 +19,36 @@
                     <!-- User list will be populated here -->
                 </div>
             </div>
+            <div class="p-4 bg-gray-50">
+                <h2 class="text-xl font-semibold text-center">Broken Camera's over 5</h2> <!-- Title for the first column -->
+                <div id="camera-list" class="flex flex-col items-center">
+                    <!-- Camera list will be populated here -->
+                </div>
+            </div>
+            <div id='user_preview'class="p-4 bg-gray-50">
+                <h2 id='user_fill' class="text-xl font-semibold text-center"></h2> <!-- Title for the first column -->
+                <div class="flex flex-col items-center">
+                    <canvas id="newChart" class="w-full max-w-xs h-auto"></canvas>
+                </div>
+            </div>
             {% endif %}
-        </div>
     </div>
 
     <script>
-        // Mobile menu toggle
-        const btn = document.querySelector('button.mobile-menu-button');
-        const menu = document.querySelector('.mobile-menu');
+        const broken = document.getElementById('camera-list');
+        
 
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-        });
+        function fetchStockLevels() {
+            fetch('/api/checkstocklevels')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(user =>{
+                        const userDiv = document.createElement('div');
+                        userDiv.textContent = `${user.username}: ${user.camera_count} broken cameras`;
+                        broken.appendChild(userDiv);
+                    })
+                });
+        }
+        fetchStockLevels();
     </script>
-    <script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
-{% endblock %}
-
-{% block title %}
-
 {% endblock %}

@@ -2,24 +2,23 @@ async function fetchData() {
     const username = document.getElementById('username').value;
     const response = await fetch(`/pie/${username}`);
     const data = await response.json();
-    console.log('Here');
     return data;
 }
 
 async function createChart() {
     const data = await fetchData();
     const ctx = document.getElementById('myPieChart').getContext('2d');
-    console.log('Here')
 
     new Chart(ctx, {
-        type: 'pie',
+        type: 'bar',
         data: {
             labels: data.labels,
             datasets: [{
-                label: 'Camera Status',
+                label: 'Broken Cameras',
                 data: data.values,
                 backgroundColor: ['#36A2EB', '#FF6384'],
-                hoverBackgroundColor: ['#36A2EB', '#FF6384']
+                hoverBackgroundColor: ['#36A2EB', '#FF6384'],
+                borderWidth: 1
             }]
         },
         options: {
@@ -34,8 +33,7 @@ async function createChart() {
                 }
                 }
             }
-        }
-    )
+        });
 }
 
 async function fetchUserList() {
@@ -53,16 +51,65 @@ async function fetchUserList() {
 
 async function populateUserList() {
     const users = await fetchUserList();
-    console.log(users);
     const userList = document.getElementById('user-list');
     users.forEach(user => {
-        console.log(user)
         const userLink = document.createElement('a');
-        userLink.href = `/user_dashboard/${user.username}`;
+        // userLink.href = `/user_dashboard/${user.username}`;
         userLink.textContent = user.username;
+        userLink.addEventListener('click', () => {
+            createChartUser(user.username);
+        });
         userList.appendChild(userLink);
     });
 }
+
+let newChartInstance;
+
+async function createChartUser(username) {
+    const response = await fetch(`/pie/${username}`);
+    const data = await response.json();
+    const ctx = document.getElementById('newChart').getContext('2d');
+    const userPreview = document.getElementById('user_fill');
+    userPreview.textContent = `Preview for ${username}`;
+    userPreview.addEventListener('click', () => {
+        // Go to /user_dashboard/username
+        window.location.href = `/user_dashboard/${username}`;
+    });
+    // Add hover pointer to the user preview
+    userPreview.style.cursor = 'pointer';
+
+    if (newChartInstance) {
+        newChartInstance.destroy();
+    }
+
+    newChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Broken Cameras',
+                data: data.values,
+                backgroundColor: ['#36A2EB', '#FF6384'],
+                hoverBackgroundColor: ['#36A2EB', '#FF6384'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    enabled: true
+                }
+            }
+        }
+    });
+}
+
+
 
 
 

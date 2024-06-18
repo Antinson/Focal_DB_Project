@@ -35,9 +35,9 @@
         </div>
         <!-- Mobile Menu -->
         <div class="mobile-menu hidden md:hidden">
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Home</a>
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Add Camera</a>
-            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Logout</a>
+            <a href="{{ url_for('home') }}" class="block py-2 px-4 text-sm hover:bg-gray-200">Home</a>
+            <a href="{{ url_for('add_camera_view') }}" class="block py-2 px-4 text-sm hover:bg-gray-200">Add Camera</a>
+            <a href="{{ url_for('logout') }}" class="block py-2 px-4 text-sm hover:bg-gray-200">Logout</a>
         </div>
     </nav>
 
