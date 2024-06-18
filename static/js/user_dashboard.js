@@ -1,10 +1,9 @@
-console.log('Hey');
-
 async function fetchData() {
-  const response = await fetch('/pie');
-  const data = await response.json();
-  console.log('Here');
-  return data;
+    const username = document.getElementById('username').value;
+    const response = await fetch(`/pie/${username}`);
+    const data = await response.json();
+    console.log('Here');
+    return data;
 }
 
 async function createChart() {
@@ -19,8 +18,8 @@ async function createChart() {
             datasets: [{
                 label: 'Camera Status',
                 data: data.values,
-                backgroundColor: ['#FF6384', '#36A2EB'],
-                hoverBackgroundColor: ['#FF6384', '#36A2EB']
+                backgroundColor: ['#36A2EB', '#FF6384'],
+                hoverBackgroundColor: ['#36A2EB', '#FF6384']
             }]
         },
         options: {
@@ -39,4 +38,6 @@ async function createChart() {
     )
 }
 
-document.addEventListener('DOMContentLoaded', createChart);
+document.addEventListener('DOMContentLoaded', () => {
+    createChart();
+});

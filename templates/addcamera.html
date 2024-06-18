@@ -1,58 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Camera</title>
-    <style>
-        /* Toast notification styles */
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            margin-left: -125px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 5px;
-            position: fixed;
-            z-index: 1;
-            left: 50%;
-            bottom: 30px;
-            font-size: 17px;
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="flex items-center flex-col my-4">
+    <h1 class="text-4xl font-bold my-6 py-5">Add a Camera</h1>
+    <div class="w-full max-w-xs">
+        <input type="text" id="cameraid" placeholder="XX:XX:XXXX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2">
+    </div>
+    <div class="py-5">
+        <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" value="" class="sr-only peer" checked id="statusCheckbox">
+            <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <span id="toggleLabel" class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Working</span>
+        </label>
+    </div>
+    <div id="messagePopup" class="hidden p-3 mt-2 text-sm text-white bg-blue-600 rounded-lg"></div>
+</div>
+
+<script>
+    function toggleLabelText() {
+        const checkbox = document.getElementById('statusCheckbox');
+        const label = document.getElementById('toggleLabel');
+        if (checkbox.checked) {
+            label.textContent = 'Broken';
+            localStorage.setItem('statusCheckbox', 'broken');
+        } else {
+            label.textContent = 'Working';
+            localStorage.setItem('statusCheckbox', 'working');
+        }
+    }
+
+    function getLabelText() {
+        const label = document.getElementById('toggleLabel');
+        return label.textContent;
+    }
+
+    function showMessage(message, isSuccess, color) {
+        const popup = document.getElementById('messagePopup');
+        popup.textContent = message;
+        popup.style.backgroundColor = color;        
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedStatus = localStorage.getItem('statusCheckbox');
+        const checkbox = document.getElementById('statusCheckbox');
+        const label = document.getElementById('toggleLabel');
+        
+        if (savedStatus === 'broken') {
+            checkbox.checked = true;
+            label.textContent = 'Broken';
+        } else {
+            checkbox.checked = false;
+            label.textContent = 'Working';
         }
 
-        #toast.show {
-            visibility: visible;
-            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
+        // Attach event listener to checkbox
+        checkbox.addEventListener('change', toggleLabelText);
 
-        @-webkit-keyframes fadein {
-            from {bottom: 0; opacity: 0;} 
-            to {bottom: 30px; opacity: 1;}
-        }
+        const cameraInput = document.getElementById('cameraid');
+        cameraInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                // Prevent the default action (form submission)
+                event.preventDefault();
 
-        @keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
-        }
+                // Get the input value
+                const cameraId = cameraInput.value;
+                const status = getLabelText();
 
-        @-webkit-keyframes fadeout {
-            from {bottom: 30px; opacity: 1;} 
-            to {bottom: 0; opacity: 0;}
-        }
+                // Create the POST request
+                fetch('api/addcamera', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        cameraid: cameraId,
+                        status: status
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    cameraInput.value = '';
+                    console.log('Success:', data);
+                    if (data.message == "Camera added successfully") {
+                        showMessage(data.message, true, 'green');
+                    } else if (data.message == "Camera already exists", true, 'blue') {
+                        showMessage(data.message, false);
+                    } else {
+                        showMessage("Failed: " + data.message, false, 'red');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    showMessage(`Failed: ${error.message}`, false, 'red');
+                });
+            }
+        });
+    });
+</script>
 
-        @keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
-        }
-    </style>
-</head>
-<body>
-    <h1>Add Camera Page</h1>
-    <input type="text" id="cameraid" name="cameraid" required>
-    <div id="toast"></div>
-    <script src="{{ url_for('static', filename='addcamera.js') }}"></script>
-</body>
-</html>
 
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
