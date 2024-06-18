@@ -10,4 +10,8 @@ COPY . .
 
 EXPOSE 5004
 
+<<<<<<< Updated upstream
 CMD ["python", "app.py"]
+=======
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+>>>>>>> Stashed changes
