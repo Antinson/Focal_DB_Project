@@ -8,10 +8,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5004
+EXPOSE 8000
 
-<<<<<<< Updated upstream
-CMD ["python", "app.py"]
-=======
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
->>>>>>> Stashed changes
+
