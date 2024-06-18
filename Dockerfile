@@ -8,6 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5004
+EXPOSE 8000
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "app:app"]
