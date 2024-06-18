@@ -146,6 +146,16 @@ def get_user_list():
     return jsonify([{"id": user.id, "username": user.username, "role": user.role} for user in users])
 
 
+@app.route('/checkstocklevels', methods=['GET'])
+def check_stock_levels():
+    user_low_stock = {}
+    for user in User.query.all():
+        camera_count = Camera.query.filter_by(user_id=user.id, status="broken").count()
+        if camera_count > 5:
+            user_low_stock[user.username] = camera_count
+    return jsonify(user_low_stock)
+
+
 if __name__ == '__main__':
     with app.app_context():
             db.create_all()
