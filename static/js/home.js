@@ -56,6 +56,7 @@ async function populateUserList() {
         const userLink = document.createElement('a');
         // userLink.href = `/user_dashboard/${user.username}`;
         userLink.textContent = user.username;
+        userLink.style.cursor = 'pointer';
         userLink.addEventListener('click', () => {
             createChartUser(user.username);
         });

@@ -164,6 +164,31 @@ def check_stock_levels():
             user_low_stock.append({"username": user.username, "camera_count": camera_count})
     return jsonify(user_low_stock)
 
+@app.route('/api/getnotifications', methods=['GET'])
+def get_notifications():
+    notifications = Notifications.query.all()
+    return jsonify([{"id": notification.id, "message": notification.message, "user_id": notification.user_id, "timestamp": notification.timestamp} for notification in notifications])
+
+@app.route('/api/createnotifications', methods=['GET'])
+def create_notifications():
+    for user in User.query.all():
+        camera_count = Camera.query.filter_by(user_id=user.id, status="broken").count()
+        if camera_count > 5 and not Notifications.query.filter_by(user_id=user.id).first():
+            notification = Notifications(message=f"{user.username} has {camera_count} broken cameras.", user_id=user.id)
+            db.session.add(notification)
+            db.session.commit()
+    return jsonify({"message": "Notifications created"})
+
+
+@app.route('/api/deletenotification', methods=['POST'])
+def delete_notification():
+    data = request.json
+    notification_id = data.get('id')
+    notification = Notifications.query.filter_by(id=notification_id).first()
+    db.session.delete(notification)
+    db.session.commit()
+    return jsonify({"message": "Notification deleted"})
+
 
 if __name__ == '__main__':
     with app.app_context():
