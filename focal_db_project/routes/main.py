@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
 from ..models import User, Camera
@@ -66,9 +66,8 @@ def add_camera():
 
 # Admin Stuff
 @main_bp.route('/addusertodb', methods=['GET'])
-@login_required
 def add_user():
-    user = User(username='another', password='test', role='normal')
+    user = User(username='anthony', password='test', role='normal')
     db.session.add(user)
     db.session.commit()
     return jsonify({"message": "User added"})

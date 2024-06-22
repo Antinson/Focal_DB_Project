@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from ..models import User
+from .. import login_manager
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -26,10 +27,10 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
  
 
 @login_manager.unauthorized_handler
 def unauthorized():
     # Redirect unauthorized users to the login page
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
