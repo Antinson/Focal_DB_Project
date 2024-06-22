@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
-from ..models import User, Camera
+from ..models import User, Camera, Notifications
+from .. import db
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -15,7 +17,7 @@ def home():
 def user_dashboard(username):
     
     if current_user.role != 'admin':
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     
     user = User.query.filter_by(username=username).first_or_404()
     camera_count = Camera.query.filter_by(user_id=user.id).count()
