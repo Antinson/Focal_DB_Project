@@ -49,23 +49,28 @@ def pie(username):
 @main_bp.route('/api/addcamera', methods=['POST'])
 @login_required
 def add_camera():
-    
-    data = request.json
-    camera_name = data.get('cameraid')
-    status = data.get('status').lower()
+    try:
+        data = request.json
+        camera_name = data.get('cameraid')
+        status = data.get('status').lower()
 
-    existing_camera = services.get_camera_by_name(camera_name, current_app.repo)
-    if existing_camera:
-        if existing_camera.status != status:
-            existing_camera.status = status
-            services.update_camera(existing_camera, current_app)
-            return jsonify({"message": "Camera updated", "cameraid": camera_name})
+        existing_camera = services.get_camera_by_name(camera_name, current_app.repo)
+
+        if existing_camera:
+            if existing_camera.status != status:
+                existing_camera.status = status
+                services.update_camera(existing_camera, current_app.repo)
+                return jsonify({"message": "Camera updated", "cameraid": camera_name}), 200
+            else:
+                return jsonify({"message": "Camera already exists", "cameraid": camera_name}), 200
         else:
-            return jsonify({"message": "Camera already exists", "cameraid": camera_name})
-    else:
-        new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username)
-        services.add_camera(new_camera, current_app.repo)
-        return jsonify({"message": "Camera added", "cameraid": camera_name})
+            new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username)
+            services.add_camera(new_camera, current_app.repo)
+            return jsonify({"message": "Camera added", "cameraid": camera_name}), 201
+    except Exception as e:
+        print('Theres an error')
+        print(f'Error: {e}')
+        return jsonify({"message": str(e)}), 500
 
 # Admin Stuff
 @main_bp.route('/addusertodb', methods=['GET'])

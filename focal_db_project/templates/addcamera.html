@@ -5,7 +5,7 @@
 <div class="flex items-center flex-col my-4">
     <h1 class="text-4xl font-bold my-6 py-5">Add a Camera</h1>
     <div class="w-full max-w-xs">
-        <input type="text" id="cameraid" placeholder="XX:XX:XXXX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2">
+        <input type="text" id="cameraid" placeholder="XX:XX:XX:XX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2" pattern="^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$" required>
     </div>
     <div class="py-5">
         <label class="inline-flex items-center cursor-pointer">
@@ -44,63 +44,77 @@
             popup.classList.add('hidden');
         }, 3000);
     }
-
     document.addEventListener('DOMContentLoaded', function() {
-        const savedStatus = localStorage.getItem('statusCheckbox');
-        const checkbox = document.getElementById('statusCheckbox');
-        const label = document.getElementById('toggleLabel');
-        
-        if (savedStatus === 'broken') {
-            checkbox.checked = true;
-            label.textContent = 'Broken';
-        } else {
-            checkbox.checked = false;
-            label.textContent = 'Working';
-        }
+    const savedStatus = localStorage.getItem('statusCheckbox');
+    const checkbox = document.getElementById('statusCheckbox');
+    const label = document.getElementById('toggleLabel');
+    
+    if (savedStatus === 'broken') {
+        checkbox.checked = true;
+        label.textContent = 'Broken';
+    } else {
+        checkbox.checked = false;
+        label.textContent = 'Working';
+    }
 
-        // Attach event listener to checkbox
-        checkbox.addEventListener('change', toggleLabelText);
+    // Attach event listener to checkbox
+    checkbox.addEventListener('change', toggleLabelText);
 
-        const cameraInput = document.getElementById('cameraid');
-        cameraInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                // Prevent the default action (form submission)
-                event.preventDefault();
+    const cameraInput = document.getElementById('cameraid');
+    cameraInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            // Prevent the default action (form submission)
+            event.preventDefault();
 
-                // Get the input value
-                const cameraId = cameraInput.value;
-                const status = getLabelText();
-
-                // Create the POST request
-                fetch('api/addcamera', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        cameraid: cameraId,
-                        status: status
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    cameraInput.value = '';
-                    console.log('Success:', data);
-                    if (data.message == "Camera added successfully") {
-                        showMessage(data.message, true, 'green');
-                    } else if (data.message == "Camera already exists", true, 'blue') {
-                        showMessage(data.message, false);
-                    } else {
-                        showMessage("Failed: " + data.message, false, 'red');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    showMessage(`Failed: ${error.message}`, false, 'red');
-                });
+            // Check if the input is valid
+            if (!cameraInput.checkValidity()) {
+                showMessage("Invalid MAC address format", 'red');
+                return;
             }
-        });
+
+            // Get the input value
+            const cameraId = cameraInput.value;
+            const status = getLabelText();
+
+            // Create the POST request
+            fetch('api/addcamera', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cameraid: cameraId,
+                    status: status
+                })
+            })
+            .then(response => {
+                cameraInput.value = '';
+                if (response.status === 201) { // Camera added successfully
+                    console.log('Here!')
+                    showMessage("Camera added successfully", 'green');
+                } else if (response.status === 200) { // Camera already exists or updated successfully
+                    // Return the response.json() Promise to allow further chaining
+                    return response.json().then(data => {
+                        if (data.message === "Camera updated") {
+                            showMessage("Camera updated successfully", 'green');
+                        } else {
+                            showMessage("Camera already exists", 'blue');
+                        }
+                    });
+                } else {
+                    // Handle other status codes
+                    return response.json().then(data => {
+                        showMessage("Failed: " + data.message, 'red');
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Fetch error:', error);
+                showMessage(`Failed: ${error.message}`, 'red');
+            });
+        }
     });
+});
 </script>
 
 

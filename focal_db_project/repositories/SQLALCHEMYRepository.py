@@ -47,14 +47,14 @@ class SQLAlchemyRepository(AbstractRepository):
     
     def get_camera_by_name(self, name: str) -> Camera:
         try:
-            camera = Camera.query.filter_by(name=name)
+            camera = Camera.query.filter_by(name=name).first()
             return camera
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while retrieving camera: {e}")
 
     def add_camera(self, camera: Camera) -> bool:
         try:
-            db.session.add(Camera)
+            db.session.add(camera)
             db.session.commit()
         except SQLAlchemyError as e:
             db.session.rollback()

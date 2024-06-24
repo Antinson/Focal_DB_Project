@@ -1,6 +1,6 @@
 import abc
 from typing import List
-from ..models import User, Camera, Notification
+from focal_db_project.models import User, Camera, Notification
 
 
 class RepositoryException(Exception):
