@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint, current_app
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
-from ..models import User, Camera, Notifications
+from ..models import User, Camera, Notification
 from .. import db
 import focal_db_project.routes.services as services
 
@@ -100,7 +100,7 @@ def check_stock_levels():
 @main_bp.route('/api/getnotifications', methods=['GET'])
 @login_required
 def get_notifications():
-    notifications = Notifications.query.all()
+    notifications = Notification.query.all()
     return jsonify([{"id": notification.id, "message": notification.message, "user_id": notification.user_id, "timestamp": notification.timestamp} for notification in notifications])
 
 @main_bp.route('/api/createnotifications', methods=['GET'])
@@ -108,18 +108,18 @@ def get_notifications():
 def create_notifications():
     for user in User.query.all():
         camera_count = Camera.query.filter_by(user_id=user.id, status="broken").count()
-        if camera_count > 5 and not Notifications.query.filter_by(user_id=user.id).first():
-            notification = Notifications(message=f"{user.username} has {camera_count} broken cameras.", user_id=user.id)
+        if camera_count > 5 and not Notification.query.filter_by(user_id=user.id).first():
+            notification = Notification(message=f"{user.username} has {camera_count} broken cameras.", user_id=user.id)
             db.session.add(notification)
             db.session.commit()
-    return jsonify({"message": "Notifications created"})
+    return jsonify({"message": "Notification created"})
 
 @main_bp.route('/api/deletenotification', methods=['POST'])
 @login_required
 def delete_notification():
     data = request.json
     notification_id = data.get('id')
-    notification = Notifications.query.filter_by(id=notification_id).first()
+    notification = Notification.query.filter_by(id=notification_id).first()
     db.session.delete(notification)
     db.session.commit()
     return jsonify({"message": "Notification deleted"})

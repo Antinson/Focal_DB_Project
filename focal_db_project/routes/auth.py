@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from ..models import User
 from .. import login_manager
@@ -18,7 +18,7 @@ def login():
         data = request.json
         username = data.get('username')
         password = data.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = services.get_user_by_username(username, current_app.repo)
         if user and user.password == password:
             login_user(user)
             return jsonify({"message": "Login successful"})

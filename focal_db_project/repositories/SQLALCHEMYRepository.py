@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
-from .abstract_repo import AbstractRepository, RepositoryException
+from .AbstractRepository import AbstractRepository, RepositoryException
 from ..models import db, User, Camera, Notification
 
 class SQLAlchemyRepository(AbstractRepository):

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -21,5 +21,9 @@ def create_app():
         from .routes import main, auth
         app.register_blueprint(main.main_bp)
         app.register_blueprint(auth.auth_bp)
+
+        # Repo instance
+        from .repositories.SQLAlchemyRepository import SQLAlchemyRepository
+        app.repo = SQLAlchemyRepository()
     
     return app

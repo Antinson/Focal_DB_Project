@@ -1,6 +1,6 @@
 from typing import List, Iterable
 from focal_db_project.repositories import AbstractRepository
-from focal_db_project.models import User, Camera, Notifications
+from focal_db_project.models import User, Camera, Notification
 
 class NameNotUniqueException(Exception):
     pass
@@ -39,7 +39,7 @@ def update_camera(camera: Camera, repo: AbstractRepository):
 def delete_camera(camera: Camera, repo: AbstractRepository):
     return repo.delete_camera(camera)
 
-def add_notification(notification: Notifications, repo: AbstractRepository):
+def add_notification(notification: Notification, repo: AbstractRepository):
     return repo.add_notification(notification)
 
 def delete_notification(notification_id: int, repo: AbstractRepository):
