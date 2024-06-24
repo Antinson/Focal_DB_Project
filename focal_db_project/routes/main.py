@@ -60,17 +60,17 @@ def add_camera():
             if existing_camera.status != status:
                 existing_camera.status = status
                 services.update_camera(existing_camera, current_app.repo)
-                return jsonify({"message": "Camera updated", "cameraid": camera_name}), 200
+                return jsonify({"success": True, "message": "Camera updated", "cameraid": camera_name}), 200
             else:
-                return jsonify({"message": "Camera already exists", "cameraid": camera_name}), 200
+                return jsonify({"success": False, "message": "Camera already exists", "cameraid": camera_name}), 200
         else:
             new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username)
             services.add_camera(new_camera, current_app.repo)
-            return jsonify({"message": "Camera added", "cameraid": camera_name}), 201
+            return jsonify({"success": True, "message": "Camera added", "cameraid": camera_name}), 201
     except Exception as e:
         print('Theres an error')
         print(f'Error: {e}')
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"success": False, "message": str(e)}), 500
 
 # Admin Stuff
 @main_bp.route('/addusertodb', methods=['GET'])
