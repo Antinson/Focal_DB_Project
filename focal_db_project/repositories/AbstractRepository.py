@@ -1,5 +1,7 @@
 import abc
 from typing import List
+from ..models import User, Camera, Notification
+
 
 class RepositoryException(Exception):
     def __init__(self, message=None):
