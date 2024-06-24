@@ -20,16 +20,12 @@ def user_dashboard(username):
     if current_user.role != 'admin':
         return redirect(url_for('main.home'))
     
-    user = services.get_user_by_username(username, repo.current_app)
-    cameras = services.get_cameras_by_user(user.id, repo.current_app)
+    user = services.get_user_by_username(username, current_app.repo)
+    camera_count = services.get_camera_count_user(user.id, current_app.repo)
+    camera_count_broken = services.get_camera_count_broken_user(user.id, current_app.repo)
+    camera_count_working = services.get_camera_count_working_user(user.id, current_app.repo)
 
-    camera_count = len(cameras)
-
-    camera_count = Camera.query.filter_by(user_id=user.id).count()
-    camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
-    camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
-
-    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_not_working, camera_count_working=camera_count_working) 
+    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_broken, camera_count_working=camera_count_working) 
 
 @main_bp.route('/addcamera')
 @login_required
@@ -39,64 +35,64 @@ def add_camera_view():
 @main_bp.route('/pie/<username>', methods=['GET'])
 @login_required
 def pie(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
-    camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()
+    user = services.get_user_by_username(username, current_app.repo)
+    
+    camera_count_broken = services.get_camera_count_broken_user(user.id, current_app.repo)
+    camera_count_working = services.get_camera_count_working_user(user.id, current_app.repo)
 
     data = {
         "labels": ["Working", "Not Working"],
-        "values": [camera_count_working, camera_count_not_working]
+        "values": [camera_count_working, camera_count_broken]
     }
     return jsonify(data)
 
 @main_bp.route('/api/addcamera', methods=['POST'])
 @login_required
 def add_camera():
+    
     data = request.json
-    print(data)
     camera_name = data.get('cameraid')
     status = data.get('status').lower()
 
-    existing_camera = Camera.query.filter_by(name=camera_name).first()
+    existing_camera = services.get_camera_by_name(camera_name, current_app.repo)
     if existing_camera:
         if existing_camera.status != status:
             existing_camera.status = status
-            db.session.commit()
+            services.update_camera(existing_camera, current_app)
             return jsonify({"message": "Camera updated", "cameraid": camera_name})
         else:
             return jsonify({"message": "Camera already exists", "cameraid": camera_name})
     else:
         new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username)
-        db.session.add(new_camera)
-        db.session.commit()
+        services.add_camera(new_camera, current_app.repo)
         return jsonify({"message": "Camera added", "cameraid": camera_name})
 
 # Admin Stuff
 @main_bp.route('/addusertodb', methods=['GET'])
 def add_user():
     user = User(username='anthony', password='test', role='normal')
-    db.session.add(user)
-    db.session.commit()
+    services.add_user(user)
     return jsonify({"message": "User added"})
 
 @main_bp.route('/getcameras', methods=['GET'])
 @login_required
 def get_cameras():
-    cameras = Camera.query.all()
+    cameras = services.get_cameras(current_app.repo)
     return jsonify([{"id": camera.name, "status": camera.status, "user_id": camera.user_id, "storage": camera.storage} for camera in cameras])
 
 @main_bp.route('/getuserlist', methods=['GET'])
 @login_required
 def get_user_list():
-    users = User.query.all()
+    users = services.get_user_list(current_app.repo)
     return jsonify([{"id": user.id, "username": user.username, "role": user.role} for user in users])
 
 @main_bp.route('/api/checkstocklevels', methods=['GET'])
 @login_required
 def check_stock_levels():
     user_low_stock = []
-    for user in User.query.all():
-        camera_count = Camera.query.filter_by(user_id=user.id, status="broken").count()
+    user_list = services.get_user_list(current_app.repo)
+    for user in user_list:
+        camera_count = services.get_camera_count_broken_user(user.id, current_app.repo)
         if camera_count > 5:
             user_low_stock.append({"username": user.username, "camera_count": camera_count})
     return jsonify(user_low_stock)
@@ -104,18 +100,18 @@ def check_stock_levels():
 @main_bp.route('/api/getnotifications', methods=['GET'])
 @login_required
 def get_notifications():
-    notifications = Notification.query.all()
+    notifications = services.get_notifications(current_app.repo)
     return jsonify([{"id": notification.id, "message": notification.message, "user_id": notification.user_id, "timestamp": notification.timestamp} for notification in notifications])
 
 @main_bp.route('/api/createnotifications', methods=['GET'])
 @login_required
 def create_notifications():
-    for user in User.query.all():
-        camera_count = Camera.query.filter_by(user_id=user.id, status="broken").count()
-        if camera_count > 5 and not Notification.query.filter_by(user_id=user.id).first():
+    user_list = services.get_user_list(current_app.repo)
+    for user in user_list:
+        camera_count = services.get_camera_count_broken_user(user.id, current_app.repo)
+        if camera_count > 5 and not services.get_notification_by_user_id(user.id, current_app.repo):
             notification = Notification(message=f"{user.username} has {camera_count} broken cameras.", user_id=user.id)
-            db.session.add(notification)
-            db.session.commit()
+            services.add_notification(notification, current_app.repo)
     return jsonify({"message": "Notification created"})
 
 @main_bp.route('/api/deletenotification', methods=['POST'])
@@ -123,8 +119,6 @@ def create_notifications():
 def delete_notification():
     data = request.json
     notification_id = data.get('id')
-    notification = Notification.query.filter_by(id=notification_id).first()
-    db.session.delete(notification)
-    db.session.commit()
+    services.delete_notification(notification_id)
     return jsonify({"message": "Notification deleted"})
 

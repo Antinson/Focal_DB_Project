@@ -40,14 +40,14 @@ class SQLAlchemyRepository(AbstractRepository):
     
     def get_cameras_by_user(self, user_id: int) -> List[Camera]:
         try:
-            cameras = Camera.filter_by(user_id=user_id)
+            cameras = Camera.query.filter_by(user_id=user_id)
             return cameras
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while retrieving cameras for user: {e}")
     
     def get_camera_by_name(self, name: str) -> Camera:
         try:
-            camera = Camera.filter_by(name=name)
+            camera = Camera.query.filter_by(name=name)
             return camera
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while retrieving camera: {e}")
@@ -114,30 +114,36 @@ class SQLAlchemyRepository(AbstractRepository):
 
     def get_notification_by_user_id(self, user_id: int) -> Notification:
         try:
-            notification = Notification.filter_by(user_id = user_id).first()
+            notification = Notification.query.filter_by(user_id = user_id).first()
             return notification
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting notification: {e}")
 
+    def get_notification_by_id(self, notification_id: int) -> Notification:
+        try:
+            notification = Notification.get(notification_id)
+            return notification
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting notification: {e}")
 
     def get_camera_count_user(self, user_id: int) -> int:
         try:
-            camera_count = Camera.filter_by(user_id = user_id).count()
+            camera_count = Camera.query.filter_by(user_id = user_id).count()
             return camera_count
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting camera count: {e}")
     
     def get_camera_count_broken_user(self, user_id: int) -> int:
         try:
-            camera_count_broken = Camera.filter_by(user_id = user_id, status='broken').count()
-            return camera_count
+            camera_count_broken = Camera.query.filter_by(user_id = user_id, status='broken').count()
+            return camera_count_broken
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting broken camera count: {e}")
 
     def get_camera_count_working_user(self, user_id: int) -> int:
         try:
-            camera_count_broken = Camera.filter_by(user_id = user_id, status='working').count()
-            return camera_count
+            camera_count_working = Camera.query.filter_by(user_id = user_id, status='working').count()
+            return camera_count_working
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting working camera count: {e}")
     
