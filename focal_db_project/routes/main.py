@@ -20,7 +20,11 @@ def user_dashboard(username):
     if current_user.role != 'admin':
         return redirect(url_for('main.home'))
     
-    user = User.query.filter_by(username=username).first_or_404()
+    user = services.get_user_by_username(username, repo.current_app)
+    cameras = services.get_cameras_by_user(user.id, repo.current_app)
+
+    camera_count = len(cameras)
+
     camera_count = Camera.query.filter_by(user_id=user.id).count()
     camera_count_not_working = Camera.query.filter_by(user_id=user.id, status='broken').count()
     camera_count_working = Camera.query.filter_by(user_id=user.id, status='working').count()

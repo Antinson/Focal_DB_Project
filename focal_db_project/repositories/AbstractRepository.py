@@ -65,4 +65,17 @@ class AbstractRepository(abc.ABC):
     def get_notification_by_user_id(self, user_id: int) -> Notification:
         raise NotImplementedError
     
+    @abc.abstractmethod
+    def get_camera_count_user(self, user_id: int) -> int:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_count_broken_user(self, user_id: int) -> int:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_count_working_user(self, user_id: int) -> int:
+        raise NotImplementedError
+
+    
 

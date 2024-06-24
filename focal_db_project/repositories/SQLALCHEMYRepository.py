@@ -120,5 +120,25 @@ class SQLAlchemyRepository(AbstractRepository):
             raise RepositoryException(f"An error occurred while getting notification: {e}")
 
 
+    def get_camera_count_user(self, user_id: int) -> int:
+        try:
+            camera_count = Camera.filter_by(user_id = user_id).count()
+            return camera_count
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting camera count: {e}")
+    
+    def get_camera_count_broken_user(self, user_id: int) -> int:
+        try:
+            camera_count_broken = Camera.filter_by(user_id = user_id, status='broken').count()
+            return camera_count
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting broken camera count: {e}")
+
+    def get_camera_count_working_user(self, user_id: int) -> int:
+        try:
+            camera_count_broken = Camera.filter_by(user_id = user_id, status='working').count()
+            return camera_count
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting working camera count: {e}")
     
 

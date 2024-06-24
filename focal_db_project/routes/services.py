@@ -27,6 +27,9 @@ def get_user_list(repo: AbstractRepository):
 def get_cameras_by_user(user_id: int, repo: AbstractRepository):
     return repo.get_cameras_by_user(user_id)
 
+def get_camera_count_user(user_id: int, repo: AbstractRepository) -> int:
+    return repo.get_camera_count_user(user_id)
+
 def get_camera_by_name(name: str, repo: AbstractRepository):
     return repo.get_camera_by_name(name)
 
@@ -51,6 +54,14 @@ def get_notifications(repo: AbstractRepository):
 def get_notification_by_user_id(user_id: int, repo: AbstractRepository):
     return repo.get_notification_by_user_id(user_id)
 
+def get_camera_count_user(user_id: int, repo: AbstractRepository) -> int:
+    return repo.get_camera_count_user(user_id)
+
+def get_camera_count_broken_user(user_id: int, repo: AbstractRepository) -> int:
+    return repo.get_camera_count_broken_user(user_id)
+
+def get_camera_count_working_user(user_id: int, repo: AbstractRepository) -> int:
+    return repo.get_camera_count_working_user(user_id)
 
 
 
