@@ -119,6 +119,6 @@ def create_notifications():
 def delete_notification():
     data = request.json
     notification_id = data.get('id')
-    services.delete_notification(notification_id)
+    services.delete_notification(notification_id, current_app.repo)
     return jsonify({"message": "Notification deleted"})
 

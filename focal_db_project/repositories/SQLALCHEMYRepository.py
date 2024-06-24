@@ -99,7 +99,8 @@ class SQLAlchemyRepository(AbstractRepository):
 
     def delete_notification(self, notification_id: int) -> bool:
         try:
-            db.session.delete(notification_id)
+            notification = self.get_notification_by_id(notification_id)
+            db.session.delete(notification)
             db.session.commit()
             return True
         except SQLAlchemyError as e:
@@ -121,7 +122,7 @@ class SQLAlchemyRepository(AbstractRepository):
 
     def get_notification_by_id(self, notification_id: int) -> Notification:
         try:
-            notification = Notification.get(notification_id)
+            notification = Notification.query.get(notification_id)
             return notification
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting notification: {e}")
