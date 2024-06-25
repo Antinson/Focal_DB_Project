@@ -127,3 +127,9 @@ def delete_notification():
     services.delete_notification(notification_id, current_app.repo)
     return jsonify({"message": "Notification deleted"})
 
+@main_bp.route('/api/download-usertable', methods=['POST'])
+@login_required
+def download_user_table():
+    data = request.json
+    print(data)
+    return jsonify({"message": "Worked"})
