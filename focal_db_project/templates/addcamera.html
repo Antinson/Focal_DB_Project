@@ -5,7 +5,7 @@
 <div class="flex items-center flex-col my-4">
     <h1 class="text-4xl font-bold my-6 py-5">Add a Camera</h1>
     <div class="w-full max-w-xs">
-        <input type="text" id="cameraid" placeholder="XX:XX:XXXX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2">
+        <input type="text" id="cameraid" placeholder="XX:XX:XX:XX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2" pattern="^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$" required>
     </div>
     <div class="py-5">
         <label class="inline-flex items-center cursor-pointer">
@@ -67,6 +67,12 @@
                 // Prevent the default action (form submission)
                 event.preventDefault();
 
+                // Check if the input is valid
+                if (!cameraInput.checkValidity()) {
+                    showMessage("Invalid MAC address format", 'red');
+                    return;
+                }
+
                 // Get the input value
                 const cameraId = cameraInput.value;
                 const status = getLabelText();
@@ -84,29 +90,16 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    cameraInput.value = '';
-                    console.log('Success:', data);
-                    if (data.message == "Camera added successfully") {
+                    if (data.success) {
                         showMessage(data.message, true, 'green');
-                    } else if (data.message == "Camera already exists", true, 'blue') {
-                        showMessage(data.message, false);
+                        cameraInput.value = '';
                     } else {
-                        showMessage("Failed: " + data.message, false, 'red');
+                        showMessage(data.message, false, 'red');
                     }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    showMessage(`Failed: ${error.message}`, false, 'red');
                 });
             }
         });
     });
 </script>
-
-
-
-{% endblock %}
-
-{% block title %}
 
 {% endblock %}
