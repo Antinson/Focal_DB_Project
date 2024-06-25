@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint, current_app
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint, current_app, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
 from ..models import User, Camera, Notification
 from .. import db
 import focal_db_project.routes.services as services
+import pandas as pd
+import io
+import openpyxl
 
 
 main_bp = Blueprint('main', __name__)
@@ -131,5 +134,26 @@ def delete_notification():
 @login_required
 def download_user_table():
     data = request.json
-    print(data)
-    return jsonify({"message": "Worked"})
+    user = services.get_user_by_username(data.get('user'), current_app.repo)
+    users_cameras = services.get_cameras_by_user(user.id, current_app.repo)
+    
+    camera_data = [{
+        'camera_name': camera.name,
+        'camera_status': camera.status,
+        'camera_user_id': camera.user_id,
+        'camera_storage': camera.storage
+    } for camera in users_cameras]
+
+    df = pd.DataFrame(camera_data)
+
+    output = io.BytesIO()
+
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
+    
+    output.seek(0)
+
+    return send_file(output,
+                     download_name="data.xlsx",
+                     as_attachment=True,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

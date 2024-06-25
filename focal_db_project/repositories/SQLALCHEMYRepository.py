@@ -40,7 +40,7 @@ class SQLAlchemyRepository(AbstractRepository):
     
     def get_cameras_by_user(self, user_id: int) -> List[Camera]:
         try:
-            cameras = Camera.query.filter_by(user_id=user_id)
+            cameras = Camera.query.filter_by(user_id=user_id).all()
             return cameras
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while retrieving cameras for user: {e}")
