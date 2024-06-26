@@ -41,13 +41,20 @@
             },
             body: JSON.stringify({filetype: selectedValue, user: username})
         })
-        .then(response => response.blob())
-        .then(blob => {
+        .then(response => {
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const filename = contentDisposition ? contentDisposition.split('filename=')[1].replace(/\"/g, '') : 'default_filename';
+            return response.blob().then(blob => {
+                return {blob, filename}
+            })
+
+        })
+        .then(({ blob, filename }) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'downloaded_file.xlsx';
+            a.download = filename.replace(/\"/g, ''); // Remove any potential quotes around the filename
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint, current_app, send_file
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint, current_app, send_file, make_response
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
 from ..models import User, Camera, Notification
@@ -136,6 +136,7 @@ def download_user_table():
     data = request.json
     user = services.get_user_by_username(data.get('user'), current_app.repo)
     users_cameras = services.get_cameras_by_user(user.id, current_app.repo)
+    filetype = data.get('filetype', 'json').lower()
     
     camera_data = [{
         'camera_name': camera.name,
@@ -145,15 +146,22 @@ def download_user_table():
     } for camera in users_cameras]
 
     df = pd.DataFrame(camera_data)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    output = io.BytesIO()
+    if (filetype == "excel"):
+        output = io.BytesIO()
 
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False)
-    
-    output.seek(0)
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+        
+        output.seek(0)
 
-    return send_file(output,
-                     download_name="data.xlsx",
-                     as_attachment=True,
-                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        return send_file(output,
+                        download_name=f"{user.username}-{timestamp}.xlsx",
+                        as_attachment=True,
+                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    else:
+        response = make_response(jsonify(camera_data))
+        response.headers["Content-Disposition"] = f"attachment; filename={user.username}-{timestamp}.json"
+        response.headers["Content-Type"] = "application/json"
+        return response
