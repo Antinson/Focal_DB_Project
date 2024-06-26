@@ -20,8 +20,13 @@
             </select>
             <button id="download">Download</button>
         </div>
+        <div class="container mx-auto p-4 bg-gray-50">
+            <h1 class="text-4xl font-bold mb-4">Summary data</h1>
+            <div id="summary_container">
+
+            </div>
+        </div>
     </div>
-    <input type="hidden" id="camera_counts_by_type" value="{{ camera_counts_by_type }}"
 
 </div>
 
@@ -29,8 +34,7 @@
     const submit = document.getElementById('download');
     const selectValue = document.getElementById('formats');
     const username = document.getElementById('username').value;
-    const camera_counts_by_type = document.getElementById('camera_counts_by_type');
-    console.log(camera_counts_by_type);
+    
     submit.addEventListener('click', () => {
         let selectedValue = selectValue.value;
         sendForm(selectedValue)
@@ -65,6 +69,36 @@
         })
         .catch(error => console.error('Error downloading the file:', error));
     }
+
+    
+
+    const getCameraCountsByType = (username) => {
+        fetch(`/api/get-camera-counts-by-type/${username}`)
+        .then(response => response.json())
+        .then(data => {
+            const summaryContainer = document.getElementById('summary_container');
+            summaryContainer.innerHTML = '';
+
+            for (const [type, count] of Object.entries(data)) {
+                const container = document.createElement('div');
+                const div = document.createElement('div');
+                const div2 = document.createElement('div');
+                const displayType = type == 'None' ? 'Unkown' : type;
+
+                div.textContent = `${displayType}`;
+                div2.textContent = `${count}`
+
+                // Append the new div to the container
+                container.appendChild(div)
+                container.appendChild(div2);
+                summaryContainer.appendChild(container);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    getCameraCountsByType(username);
+   
         
 </script>
 

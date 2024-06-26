@@ -27,9 +27,19 @@ def user_dashboard(username):
     camera_count = services.get_camera_count_user(user.id, current_app.repo)
     camera_count_broken = services.get_camera_count_broken_user(user.id, current_app.repo)
     camera_count_working = services.get_camera_count_working_user(user.id, current_app.repo)
-    camera_counts_by_type = services.get_all_type_counts_for_user(user.id, current_app.repo)
 
-    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_broken, camera_count_working=camera_count_working, camera_counts_by_type = camera_counts_by_type) 
+    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_broken, camera_count_working=camera_count_working) 
+
+@main_bp.route('/api/get-camera-counts-by-type/<username>')
+@login_required
+def get_camera_counts_by_type(username):
+    user = services.get_user_by_username(username, current_app.repo)
+    camera_counts_by_type = services.get_all_type_counts_for_user(user.id, current_app.repo)
+    
+    json_ready_data = {("None" if k is None else k): v for k, v in camera_counts_by_type.items()}
+
+    response = jsonify(json_ready_data)
+    return response
 
 @main_bp.route('/addcamera')
 @login_required
@@ -57,18 +67,20 @@ def add_camera():
         data = request.json
         camera_name = data.get('cameraid')
         status = data.get('status').lower()
+        camera_type = data.get('camera_type').upper()
 
         existing_camera = services.get_camera_by_name(camera_name, current_app.repo)
 
         if existing_camera:
-            if existing_camera.status != status:
+            if existing_camera.status != status or existing_camera.camera_type != camera_type:
                 existing_camera.status = status
+                existing_camera.camera_type = camera_type
                 services.update_camera(existing_camera, current_app.repo)
                 return jsonify({"success": True, "message": "Camera updated", "cameraid": camera_name}), 200
             else:
                 return jsonify({"success": False, "message": "Camera already exists", "cameraid": camera_name}), 200
         else:
-            new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username)
+            new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username, camera_type = camera_type)
             services.add_camera(new_camera, current_app.repo)
             return jsonify({"success": True, "message": "Camera added", "cameraid": camera_name}), 201
     except Exception as e:
@@ -166,3 +178,4 @@ def download_user_table():
         response.headers["Content-Disposition"] = f"attachment; filename={user.username}-{timestamp}.json"
         response.headers["Content-Type"] = "application/json"
         return response
+

@@ -58,6 +58,8 @@
         return label.textContent;
     }
 
+
+
     function showMessage(message, isSuccess, color) {
         const popup = document.getElementById('messagePopup');
         popup.textContent = message;
@@ -99,6 +101,11 @@
                 // Get the input value
                 const cameraId = cameraInput.value;
                 const status = getLabelText();
+                const type = document.getElementById('camera_type').value;
+                const fov = document.getElementById('camera_fov').value;
+                const cameraType = type + "-" + fov;
+                console.log('Cam Type Is: ');
+                console.log(cameraType);
 
                 // Create the POST request
                 fetch('api/addcamera', {
@@ -108,7 +115,8 @@
                     },
                     body: JSON.stringify({
                         cameraid: cameraId,
-                        status: status
+                        status: status,
+                        camera_type: cameraType
                     })
                 })
                 .then(response => response.json())

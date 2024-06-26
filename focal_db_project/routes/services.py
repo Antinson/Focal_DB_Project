@@ -80,7 +80,7 @@ def get_all_type_counts_for_user(user_id, repo: AbstractRepository):
     camera_data = {}
     for camera in camera_list:
         if camera.camera_type not in camera_data:
-            camera_data[camera.camera_type] = get_camera_list_by_type_for_user(camera.camera_type, user_id, repo)
+            camera_data[camera.camera_type] = get_camera_by_type_count_for_user(camera.camera_type, user_id, repo)
     return camera_data
 
 
