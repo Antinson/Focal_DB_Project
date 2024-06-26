@@ -148,4 +148,25 @@ class SQLAlchemyRepository(AbstractRepository):
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting working camera count: {e}")
     
+      
+    def get_camera_by_type(self, camera_type: str) -> List[Camera]:
+        try:
+            camera_list = Camera.query.filter_by(camera_type = camera_type).all()
+            return camera_list
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting cameras by type: {e}")
+    
 
+    def get_camera_by_type_count_for_user(self, camera_type: str, user_id: int) -> int:
+        try:
+            camera_count = Camera.query.filter_by(camera_type = camera_type, user_id = user_id).count()
+            return camera_count
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting cameras by type: {e}")
+
+    def get_camera_list_by_type_for_user(self, camera_type: str, user_id: int) -> List[Camera]:
+        try:
+            camera_list = Camera.query.filter_by(camera_type = camera_type, user_id = user_id).all()
+            return camera_list
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting cameras by type: {e}")

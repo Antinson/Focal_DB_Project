@@ -80,6 +80,17 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_camera_count_working_user(self, user_id: int) -> int:
         raise NotImplementedError
-
     
+    @abc.abstractmethod
+    def get_camera_by_type(self, camera_type: str) -> List[Camera]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_by_type_count_for_user(self, camera_type: str, user_id: int) -> int:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_list_by_type_for_user(self, camera_type: str, user_id: int) -> List[Camera]:
+        raise NotImplementedError
+
 

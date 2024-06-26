@@ -21,6 +21,7 @@
             <button id="download">Download</button>
         </div>
     </div>
+    <input type="hidden" id="camera_counts_by_type" value="{{ camera_counts_by_type }}"
 
 </div>
 
@@ -28,6 +29,8 @@
     const submit = document.getElementById('download');
     const selectValue = document.getElementById('formats');
     const username = document.getElementById('username').value;
+    const camera_counts_by_type = document.getElementById('camera_counts_by_type');
+    console.log(camera_counts_by_type);
     submit.addEventListener('click', () => {
         let selectedValue = selectValue.value;
         sendForm(selectedValue)

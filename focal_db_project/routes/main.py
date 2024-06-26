@@ -27,8 +27,9 @@ def user_dashboard(username):
     camera_count = services.get_camera_count_user(user.id, current_app.repo)
     camera_count_broken = services.get_camera_count_broken_user(user.id, current_app.repo)
     camera_count_working = services.get_camera_count_working_user(user.id, current_app.repo)
+    camera_counts_by_type = services.get_all_type_counts_for_user(user.id, current_app.repo)
 
-    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_broken, camera_count_working=camera_count_working) 
+    return render_template('test_dashboard.html', username=user.username, camera_count=camera_count, camera_count_not_working=camera_count_broken, camera_count_working=camera_count_working, camera_counts_by_type = camera_counts_by_type) 
 
 @main_bp.route('/addcamera')
 @login_required
