@@ -26,7 +26,7 @@ async function createChart() {
             maintainAspectRatio: true,
             plugins: {
                 legend: {
-                    position: 'top',
+                    display: false // Hide the legend
                 },
                 tooltip: {
                     enabled: true
