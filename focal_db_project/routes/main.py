@@ -155,7 +155,8 @@ def download_user_table():
         'camera_name': camera.name,
         'camera_status': camera.status,
         'camera_user_id': camera.user_id,
-        'camera_storage': camera.storage
+        'camera_storage': camera.storage,
+        'camera_type': camera.camera_type
     } for camera in users_cameras]
 
     df = pd.DataFrame(camera_data)
@@ -179,3 +180,29 @@ def download_user_table():
         response.headers["Content-Type"] = "application/json"
         return response
 
+
+@main_bp.route('/api/get-camera-user/<username>', methods=['GET'])
+@login_required
+def get_camera_user(username):
+    try:
+        print(username)
+        user = services.get_user_by_username(username, current_app.repo)
+        users_cameras = services.get_cameras_by_user(user.id, current_app.repo)
+
+        camera_data = [{
+            'camera_name': camera.name,
+            'camera_status': camera.status,
+            'camera_user_id': camera.user_id,
+            'camera_storage': camera.storage,
+            'camera_type': camera.camera_type
+        } for camera in users_cameras]
+
+        return jsonify(camera_data)
+    except Exception as e:
+        return jsonify({'error' 'Something went wrong!'})
+
+
+@main_bp.route('/user-test/<username>', methods=['GET'])
+@login_required
+def user_test_page(username):
+    return render_template('my_cameras.html', user=username)
