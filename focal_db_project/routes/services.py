@@ -66,6 +66,23 @@ def get_camera_count_broken_user(user_id: int, repo: AbstractRepository) -> int:
 def get_camera_count_working_user(user_id: int, repo: AbstractRepository) -> int:
     return repo.get_camera_count_working_user(user_id)
 
+def get_camera_by_type(camera_type: str, repo: AbstractRepository) -> List[Camera]:
+    return repo.get_camera_by_type(camera_type)
+
+def get_camera_by_type_count_for_user(camera_type: str, user_id: int, repo: AbstractRepository) -> int:
+    return repo.get_camera_by_type_count_for_user(camera_type, user_id)
+
+def get_camera_list_by_type_for_user(camera_type: str, user_id: int, repo: AbstractRepository) -> List[Camera]:
+    return repo.get_camera_list_by_type_for_user(camera_type, user_id)
+
+def get_all_type_counts_for_user(user_id, repo: AbstractRepository):
+    camera_list = get_cameras_by_user(user_id, repo)
+    camera_data = {}
+    for camera in camera_list:
+        if camera.camera_type not in camera_data:
+            camera_data[camera.camera_type] = get_camera_by_type_count_for_user(camera.camera_type, user_id, repo)
+    return camera_data
+
 
 
 
