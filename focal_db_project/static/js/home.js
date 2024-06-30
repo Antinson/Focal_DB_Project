@@ -30,6 +30,17 @@ async function createChart() {
                 },
                 tooltip: {
                     enabled: true
+                },
+                datalabels: {
+                    anchor: 'middle',
+                    align: 'end',
+                    color: '#000',
+                    font: {
+                        weight: 'bold'
+                    },
+                    formatter: function(value, context) {
+                        return value; 
+                    }
                 }
                 }
             }
@@ -100,7 +111,7 @@ async function createChartUser(username) {
             maintainAspectRatio: true,
             plugins: {
                 legend: {
-                    position: 'top',
+                    display: false // Hide the legend,
                 },
                 tooltip: {
                     enabled: true
@@ -116,5 +127,6 @@ async function createChartUser(username) {
 
 document.addEventListener('DOMContentLoaded', () => {
     createChart();
+    Chart.register(ChartDataLabels);
     populateUserList();
 });
