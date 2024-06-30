@@ -185,7 +185,7 @@ def download_user_table():
 @login_required
 def get_camera_user(username):
     try:
-        print(username)
+        username = username.lower()
         user = services.get_user_by_username(username, current_app.repo)
         users_cameras = services.get_cameras_by_user(user.id, current_app.repo)
 
@@ -199,7 +199,7 @@ def get_camera_user(username):
 
         return jsonify(camera_data)
     except Exception as e:
-        return jsonify({'error' 'Something went wrong!'})
+        return jsonify({'error': 'Something went wrong!'})
 
 
 @main_bp.route('/user-test/<username>', methods=['GET'])
