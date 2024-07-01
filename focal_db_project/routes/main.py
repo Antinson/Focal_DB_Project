@@ -206,3 +206,69 @@ def get_camera_user(username):
 @login_required
 def user_test_page(username):
     return render_template('my_cameras.html', user=username)
+
+
+@main_bp.route('/editcamera/<camera>', methods=['GET'])
+@login_required
+def edit_camera_test(camera):
+    return render_template('editcamera.html', camera=camera)
+
+
+@main_bp.route('/api/updatecamera', methods=['POST'])
+@login_required
+def update_camera():
+    try:
+        new_camera_values = request.json
+        camera_name = new_camera_values.get('camera_name')
+        camera = services.get_camera_by_name(camera_name, current_app.repo)
+
+        print(camera.camera_type)
+
+
+        if (camera.user_id == current_user.id or current_user.role == 'admin'):
+            camera.status = new_camera_values.get('camera_status')
+            camera.camera_type = new_camera_values.get('camera_type')
+            services.update_camera(camera, current_app.repo)
+            print(camera.camera_type)
+            return jsonify({'message': 'update successful'})
+        return jsonify({'message': 'update un-successful'})
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'Something went very wrong'})
+
+@main_bp.route('/camera-test', methods=['GET'])
+@login_required
+def camera_testing_update():
+    return render_template('editpage.html')
+
+@main_bp.route('/api/getspecificcamera', methods=['POST'])
+@login_required
+def get_specific_camera():
+    try:
+        data = request.json
+        camera_name = data.get('camera_name')
+        camera = services.get_camera_by_name(camera_name, current_app.repo)
+
+        camera_data = {
+            'camera_name': camera.name,
+            'camera_status': camera.status,
+            'camera_type': camera.camera_type
+        }
+
+        return jsonify(camera_data)
+
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'Something went very wrong'})
+
+@main_bp.route('/api/deletecamera', methods=['POST'])
+@login_required
+def delete_camera():
+    try:
+        data = request.json
+        camera_name = data.get('camera_name')
+        camera_to_delete = services.get_camera_by_name(camera_name, current_app.repo)
+        services.delete_camera(camera_to_delete, current_app.repo)
+        return jsonify({'message': 'Deletion Successful'})
+    except Exception as e:
+        return jsonify({'message': 'Something went wrong'})

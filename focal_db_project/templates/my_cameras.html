@@ -58,13 +58,21 @@
             <td class="border px-4 py-2">${camera.camera_name}</td>
             <td class="border px-4 py-2">${camera.camera_status}</td>
             <td class="border px-4 py-2">${camera.camera_type}</td>
-            <td class="border px-4 py-2"><button>Edit</button></td>
+            <td class="border px-4 py-2"><button class="edit-button" data-camera-name="${camera.camera_name}">Edit</button></td>
           `;
           tbody.appendChild(row);
         });
         table.appendChild(tbody);
 
         camera_table.appendChild(table);
+
+        document.querySelectorAll('.edit-button').forEach(button => {
+          button.addEventListener('click', (event) => {
+            const cameraName = event.target.getAttribute('data-camera-name');
+            localStorage.setItem('lastLocation', window.location.href);
+            window.location.href = `/editcamera/${cameraName}`;
+          });
+        });
       });
   </script>
 

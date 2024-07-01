@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="flex items-center flex-col my-4">
+    <h1 id="camera_name" class="text-4xl font-bold my-6 py-5">{{ camera }}</h1> 
+    <div class="py-5">
+        <select name="camera_details" id="camera_status" class="p-2 border rounded-md">
+            <option value="working">Working</option>
+            <option value="broken">Broken</option>
+        </select>
+
+        <select name="camera_details" id="camera_type" class="p-2 border rounded-md">
+            <option value="SE">Shelf Edge</option>
+            <option value="FM">Face Mount</option>
+            <option value="HM">Hanger Mount</option>
+            <option value="RM">Riser Mount</option>
+            <option value="WS">Wire Shelf</option>
+            <option value="SM">Stand Mount</option>
+            <option value="HH">Hammer Head Riser</option>
+            <option value="UM">Universal Mount</option>
+            <option value="CM">Clip Mount</option>
+            <option value="SC">Striding Cam</option>
+            <option value="BR">Backroom</option>
+        </select>
+        <select name="camera_details2" id="camera_fov" class="p-2 border rounded-md ml-2">
+            <option value="21">FOV 21</option>
+            <option value="40">FOV 40</option>
+            <option value="60">FOV 60</option>
+            <option value="88">FOV 88</option>
+            <option value="110">FOV 110</option>
+            <option value="120">FOV 120</option>
+        </select>
+    </div>
+    <div id="messagePopup" class="hidden p-3 mt-2 text-sm text-white bg-blue-600 rounded-lg"></div>
+    <div class="p-3 flex flex-row my-4 space-x-4">
+        <button id="update_camera" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Update</button>
+        <button id="delete_camera" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Delete</button>
+    </div>
+</div>
+
+<script>
+    
+
+    document.addEventListener('DOMContentLoaded', (event) => { 
+        const cameraNameElement = document.getElementById('camera_name');
+        const camera_name = cameraNameElement.textContent.trim();
+        const cameraStatusElement = document.getElementById('camera_status');
+        const cameraTypeElement = document.getElementById('camera_type');
+        const cameraFovElement = document.getElementById('camera_fov');
+        const messagePopup = document.getElementById('messagePopup');
+
+        const getCamera = () => {
+        fetch('/api/getspecificcamera', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({camera_name: `${camera_name}`})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Hello I here');
+                console.log('Data is: ');
+                console.log(camera_name);
+
+                cameraStatusElement.value = data.camera_status;
+                const [camera_type, camera_fov] = data.camera_type.split('-');
+                cameraTypeElement.value = camera_type;
+                cameraFovElement.value = camera_fov;
+
+            })
+            .catch(error => console.error('Error:', error))
+        }
+    
+    const updateCamera = () => {
+
+        const camera_status = cameraStatusElement.value;
+        const camera_type = cameraTypeElement.value;
+        const camera_fov = cameraFovElement.value;
+
+        fetch('/api/updatecamera', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                camera_name: camera_name,
+                camera_status: camera_status,
+                camera_type: `${camera_type}-${camera_fov}`
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            messagePopup.textContent = data.message;
+                messagePopup.classList.remove('hidden');
+                setTimeout(() => {
+                    messagePopup.classList.add('hidden');
+                }, 3000); // Hide the message after 3 seconds
+        })
+        .catch(error => {
+            messagePopup.textContent = 'Update failed';
+                messagePopup.classList.remove('hidden');
+                setTimeout(() => {
+                    messagePopup.classList.add('hidden');
+                }, 3000); // Hide the message after 3 seconds
+        })
+    }
+
+    const deleteCamera = () => {
+        console.log('DeleteCamera!');
+        fetch('/api/deletecamera', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ camera_name: camera_name })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            messagePopup.textContent = 'Deleted, Redirecting to previous page!';
+                messagePopup.classList.remove('hidden');
+                setTimeout(() => {
+                    messagePopup.classList.add('hidden');
+                }, 3000); // Hide the message after 3 seconds
+                const lastLocation = localStorage.getItem('lastLocation');
+                setTimeout(() => {
+                    if (lastLocation) {
+                        window.location.href = lastLocation; // Redirect to the last location
+                    } else {
+                        window.location.href = '/defaultPage'; // Redirect to a default page if no last location
+                    }
+                }, 3000); // Delay of 3 seconds
+        })
+        .catch(error => {
+            messagePopup.textContent = 'Delete failed';
+                messagePopup.classList.remove('hidden');
+                setTimeout(() => {
+                    messagePopup.classList.add('hidden');
+                }, 3000); // Hide the message after 3 seconds
+        });
+    }
+
+
+        getCamera()
+        
+        document.getElementById('update_camera').addEventListener('click', updateCamera);
+        document.getElementById('delete_camera').addEventListener('click', deleteCamera);
+    })
+</script>
+
+{% endblock %}
