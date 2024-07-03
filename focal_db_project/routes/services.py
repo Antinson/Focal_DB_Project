@@ -84,6 +84,8 @@ def get_all_type_counts_for_user(user_id, repo: AbstractRepository):
     return camera_data
 
 
+def get_camera_by_user_paginate(user_id: int, repo: AbstractRepository, camera_type: str = None, status: str = None, page: int = 1, per_page: int = 5):
+    return repo.get_camera_by_user_paginate(user_id, camera_type, status, page, per_page)
 
 
 

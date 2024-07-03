@@ -170,3 +170,17 @@ class SQLAlchemyRepository(AbstractRepository):
             return camera_list
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting cameras by type: {e}")
+
+    def get_camera_by_user_paginate(self, user_id: int, camera_type: str = None, status: str = None, page: int = 1, per_page: int = 5):
+        try:
+            query = Camera.query.filter_by(user_id=user_id)
+            if camera_type:
+                query = query.filter(Camera.camera_type == camera_type)
+            if status:
+                query = query.filter(Camera.status == status)
+
+            paginated_query = query.paginate(page=page, per_page=per_page, error_out=False)
+
+            return paginated_query
+        except SQLAlchemyError as e:
+            raise RepositoryException(f"An error occurred while getting cameras by user paginate: {e}")
