@@ -3,8 +3,6 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    console.log(JSON.stringify({ username: username, password: password }))
-
     fetch('/login', {
         method: 'POST',
         headers: {
