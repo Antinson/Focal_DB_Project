@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Success:', data);
                 })
                 .catch((error) => {
+                    cameraInput.value = '';
                     console.error('Error:', error);
                     showToast('An error occurred while adding the camera.');
                 });
