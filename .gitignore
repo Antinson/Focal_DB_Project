@@ -1,2 +1,3 @@
 venv
-FocalProject.pem
+FocalProject.pem__pycache__/
+focal_db_project/routes/__pycache__/
