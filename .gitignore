@@ -7,3 +7,4 @@ __pycache__/config.cpython-310.pyc
 focal_db_project/routes/__pycache__/main.cpython-310.pyc__pycache__/
 focal_db_project/routes/__pycache__/
 venv/
+/focal_db_project/__pycache__
