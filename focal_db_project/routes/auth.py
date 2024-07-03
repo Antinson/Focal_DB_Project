@@ -4,6 +4,7 @@ from ..models import User
 from .. import login_manager
 from .. import db
 import focal_db_project.routes.services as services
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -19,7 +20,7 @@ def login():
         username = data.get('username')
         password = data.get('password')
         user = services.get_user_by_username(username, current_app.repo)
-        if user and user.password == password:
+        if user and check_password_hash(user.password, password):
             login_user(user)
             return jsonify({"message": "Login successful"})
         else:
@@ -32,6 +33,24 @@ def logout():
     logout_user()
     return redirect(url_for('auth.login'))
  
+
+@auth_bp.route('/register', methods=['GET', 'POST'])
+@login_required
+def register_user():
+    if request.method == 'POST':
+        try:
+            data = request.json
+            username = data.get('username')
+            password = data.get('password')
+            role = data.get('role')
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+            user = User(username=username, password=hashed_password, role=role)
+            services.add_user(user, current_app.repo)
+            return jsonify({"message": "Creation successful"})
+        except Exception as e:
+            print(e)
+            return jsonify({"message": "Something went wrong"})
+    return render_template('register.html')
 
 @login_manager.unauthorized_handler
 def unauthorized():
