@@ -21,6 +21,9 @@
                 <div class="hidden md:flex items-center space-x-1">
                     <a href="{{ url_for('main.home') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Home</a>
                     <a href="{{ url_for('main.add_camera_view') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Add Camera</a>
+                    {% if role == 'admin' %}
+                    <a href="{{ url_for('auth.register_user') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Register User</a>
+                    {% endif %}
                     <a href="{{ url_for('auth.logout') }}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Logout</a>
                 </div>
                 <!-- Mobile Menu Button -->
