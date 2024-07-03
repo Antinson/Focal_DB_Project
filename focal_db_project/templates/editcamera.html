@@ -60,9 +60,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Hello I here');
-                console.log('Data is: ');
-                console.log(camera_name);
 
                 cameraStatusElement.value = data.camera_status;
                 const [camera_type, camera_fov] = data.camera_type.split('-');
@@ -108,7 +105,6 @@
     }
 
     const deleteCamera = () => {
-        console.log('DeleteCamera!');
         fetch('/api/deletecamera', {
             method: 'POST',
             headers: {
@@ -118,7 +114,6 @@
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             messagePopup.textContent = 'Deleted, Redirecting to previous page!';
                 messagePopup.classList.remove('hidden');
                 setTimeout(() => {

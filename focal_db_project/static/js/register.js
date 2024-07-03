@@ -8,8 +8,6 @@ document.getElementById('registerForm').addEventListener('submit', function(even
         role: formData.get('roles')
     };
 
-    console.log(JSON.stringify({ username: username, password: password }))
-
     fetch('/register', {
         method: 'POST',
         headers: {
