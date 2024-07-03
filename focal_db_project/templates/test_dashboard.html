@@ -26,6 +26,11 @@
 
             </div>
         </div>
+        <div class="p-4 flex flex-col justify-center items-center bg-gray-50">
+            <h2 class="text-xl font-semibold text-center mb-4">My Cameras</h2>
+            <!-- Title for the first column -->
+            <div id="camera_table" class="flex justify-center items-center"></div>
+        </div>
     </div>
 
 </div>
@@ -96,6 +101,66 @@
         })
         .catch(error => console.error('Error:', error));
     }
+
+    const camera_table = document.getElementById("camera_table");
+
+    fetch(`/api/get-camera-user/${username}`)
+      .then((response) => response.json())
+      .then((cameras) => {
+        // Sort cameras alphabetically by camera_name
+        cameras.sort((a, b) => {
+          const nameA = a.camera_status.toUpperCase(); // Ignore upper and lowercase
+          const nameB = b.camera_status.toUpperCase(); // Ignore upper and lowercase
+
+          // Sorted by working at top broken at bottom
+          if (nameA > nameB) {
+            return -1;
+          }
+          if (nameA < nameB) {
+            return 1;
+          }
+          return 0;
+        });
+
+        const table = document.createElement("table");
+        table.classList.add("table-auto", "w-full", "bg-gray-100", "rounded-lg");
+        const thead = document.createElement("thead");
+        thead.innerHTML = `
+          <tr>
+            <th class="px-4 py-2">Camera Name</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Type</th>
+            <th class="px-4 py-2">Edit</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        cameras.forEach((camera) => {
+          if(camera.camera_type == null) {
+            camera.camera_type = "Unknown";
+          }
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="border px-4 py-2">${camera.camera_name}</td>
+            <td class="border px-4 py-2">${camera.camera_status}</td>
+            <td class="border px-4 py-2">${camera.camera_type}</td>
+            <td class="border px-4 py-2"><button class="edit-button" data-camera-name="${camera.camera_name}">Edit</button></td>
+          `;
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        camera_table.appendChild(table);
+
+        document.querySelectorAll('.edit-button').forEach(button => {
+          button.addEventListener('click', (event) => {
+            const cameraName = event.target.getAttribute('data-camera-name');
+            localStorage.setItem('lastLocation', window.location.href);
+            window.location.href = `/editcamera/${cameraName}`;
+          });
+        });
+      });
 
     getCameraCountsByType(username);
    
