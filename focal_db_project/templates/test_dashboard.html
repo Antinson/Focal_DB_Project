@@ -116,7 +116,7 @@
 
     const camera_table = document.getElementById("camera_table");
     let currentPage = 1;
-    const perPage = 5;
+    const perPage = 20;
 
     const fetchCameras = (username, cameraType, status, page = 1, perPage = 5) => {
         let url = `/api/get-camera-user/${username}?page=${page}&per_page=${perPage}`;
