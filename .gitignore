@@ -1,3 +1,5 @@
 venv
 FocalProject.pem__pycache__/
 focal_db_project/routes/__pycache__/
+__pycache__/
+focal_db_project/routes/__pycache__/
