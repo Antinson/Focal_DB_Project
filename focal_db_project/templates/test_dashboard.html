@@ -130,7 +130,6 @@
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 const cameras = data.data;
                 const total = data.total;
                 const totalPages = Math.ceil(total / perPage);

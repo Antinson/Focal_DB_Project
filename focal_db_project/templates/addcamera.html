@@ -104,8 +104,6 @@
                 const type = document.getElementById('camera_type').value;
                 const fov = document.getElementById('camera_fov').value;
                 const cameraType = type + "-" + fov;
-                console.log('Cam Type Is: ');
-                console.log(cameraType);
 
                 // Create the POST request
                 fetch('api/addcamera', {
