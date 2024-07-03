@@ -187,7 +187,15 @@ def get_camera_user(username):
     try:
         username = username.lower()
         user = services.get_user_by_username(username, current_app.repo)
-        users_cameras = services.get_cameras_by_user(user.id, current_app.repo)
+
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 5))
+
+        # Fetch filtered data if camera_type or status are provided
+        camera_type = request.args.get('camera_type')
+        status = request.args.get('status')
+
+        users_cameras = services.get_camera_by_user_paginate(user.id, current_app.repo, camera_type, status, page, per_page)
 
         camera_data = [{
             'camera_name': camera.name,
@@ -195,11 +203,20 @@ def get_camera_user(username):
             'camera_user_id': camera.user_id,
             'camera_storage': camera.storage,
             'camera_type': camera.camera_type
-        } for camera in users_cameras]
+        } for camera in users_cameras.items]
 
-        return jsonify(camera_data)
+        print(camera_data)
+
+        return jsonify({
+            'data': camera_data,
+            'total': users_cameras.total,
+            'page': users_cameras.page,
+            'per_page': users_cameras.per_page
+        })
     except Exception as e:
-        return jsonify({'error': 'Something went wrong!'})
+        current_app.logger.error(f"Error fetching camera data for user {username}: {e}")
+        return jsonify({'error': 'Something went wrong!'}), 500
+
 
 
 @main_bp.route('/user-test/<username>', methods=['GET'])

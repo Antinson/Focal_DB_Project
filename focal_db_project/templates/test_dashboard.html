@@ -5,6 +5,26 @@
 <div class="container mx-auto p-4">
     <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
     <input type="hidden" id="username" value="{{ username }}">
+    
+    <div class="mb-4">
+        <label for="camera_type_filter" class="block text-lg font-semibold">Filter by Camera Type:</label>
+        <select id="camera_type_filter" class="block w-full mt-2 p-2 border rounded">
+            <option value="">All</option>
+            <option value="Type1">Type1</option>
+            <option value="Type2">Type2</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+    <div class="mb-4">
+        <label for="status_filter" class="block text-lg font-semibold">Filter by Status:</label>
+        <select id="status_filter" class="block w-full mt-2 p-2 border rounded">
+            <option value="">All</option>
+            <option value="Working">Working</option>
+            <option value="Broken">Broken</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+    
     <div id="chart-container" class="grid grid-cols-2 gap-4 w-full h-auto">
         <div class="bg-gray-50 p-4 flex flex-col justify-center items-center">
             <h2 class="text-xl font-semibold text-center mb-4">{{username | upper}} Camera Storage</h2> <!-- Title for the first column -->
@@ -32,7 +52,10 @@
             <div id="camera_table" class="flex justify-center items-center"></div>
         </div>
     </div>
-
+    
+    <div id="pagination-controls" class="flex justify-center mt-4">
+        <!-- Pagination buttons will be appended here -->
+    </div>
 </div>
 
 <script>
@@ -75,8 +98,6 @@
         .catch(error => console.error('Error downloading the file:', error));
     }
 
-    
-
     const getCameraCountsByType = (username) => {
         fetch(`/api/get-camera-counts-by-type/${username}`)
         .then(response => response.json())
@@ -103,73 +124,99 @@
     }
 
     const camera_table = document.getElementById("camera_table");
+    let currentPage = 1;
+    const perPage = 5;
 
-    fetch(`/api/get-camera-user/${username}`)
-      .then((response) => response.json())
-      .then((cameras) => {
-        // Sort cameras alphabetically by camera_name
-        cameras.sort((a, b) => {
-          const nameA = a.camera_status.toUpperCase(); // Ignore upper and lowercase
-          const nameB = b.camera_status.toUpperCase(); // Ignore upper and lowercase
+    const fetchCameras = (username, cameraType, status, page = 1, perPage = 5) => {
+        let url = `/api/get-camera-user/${username}?page=${page}&per_page=${perPage}`;
+        if (cameraType) {
+            url += `&camera_type=${cameraType}`;
+        }
+        if (status) {
+            url += `&status=${status}`;
+        }
 
-          // Sorted by working at top broken at bottom
-          if (nameA > nameB) {
-            return -1;
-          }
-          if (nameA < nameB) {
-            return 1;
-          }
-          return 0;
-        });
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const cameras = data.data;
+                const total = data.total;
+                const totalPages = Math.ceil(total / perPage);
 
-        const table = document.createElement("table");
-        table.classList.add("table-auto", "w-full", "bg-gray-100", "rounded-lg");
-        const thead = document.createElement("thead");
-        thead.innerHTML = `
-          <tr>
-            <th class="px-4 py-2">Camera Name</th>
-            <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">Type</th>
-            <th class="px-4 py-2">Edit</th>
-          </tr>
-        `;
-        table.appendChild(thead);
+                camera_table.innerHTML = '';
+                const table = document.createElement("table");
+                table.classList.add("table-auto", "w-full", "bg-gray-100", "rounded-lg");
+                const thead = document.createElement("thead");
+                thead.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-2">Camera Name</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Edit</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
 
-        const tbody = document.createElement("tbody");
-        cameras.forEach((camera) => {
-          if(camera.camera_type == null) {
-            camera.camera_type = "Unknown";
-          }
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td class="border px-4 py-2">${camera.camera_name}</td>
-            <td class="border px-4 py-2">${camera.camera_status}</td>
-            <td class="border px-4 py-2">${camera.camera_type}</td>
-            <td class="border px-4 py-2"><button class="edit-button" data-camera-name="${camera.camera_name}">Edit</button></td>
-          `;
-          tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
+                const tbody = document.createElement("tbody");
+                cameras.forEach(camera => {
+                    if (camera.camera_type == null) {
+                        camera.camera_type = "Unknown";
+                    }
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td class="border px-4 py-2">${camera.camera_name}</td>
+                        <td class="border px-4 py-2">${camera.camera_status}</td>
+                        <td class="border px-4 py-2">${camera.camera_type}</td>
+                        <td class="border px-4 py-2"><button class="edit-button" data-camera-name="${camera.camera_name}">Edit</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                camera_table.appendChild(table);
 
-        camera_table.appendChild(table);
+                document.querySelectorAll('.edit-button').forEach(button => {
+                    button.addEventListener('click', event => {
+                        const cameraName = event.target.getAttribute('data-camera-name');
+                        localStorage.setItem('lastLocation', window.location.href);
+                        window.location.href = `/editcamera/${cameraName}`;
+                    });
+                });
 
-        document.querySelectorAll('.edit-button').forEach(button => {
-          button.addEventListener('click', (event) => {
-            const cameraName = event.target.getAttribute('data-camera-name');
-            localStorage.setItem('lastLocation', window.location.href);
-            window.location.href = `/editcamera/${cameraName}`;
-          });
-        });
-      });
+                // Create pagination controls
+                const paginationControls = document.getElementById('pagination-controls');
+                paginationControls.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.textContent = i;
+                    pageButton.classList.add('px-2', 'py-1', 'm-1', 'border', 'rounded');
+                    if (i === page) {
+                        pageButton.classList.add('bg-blue-500', 'text-white');
+                    }
+                    pageButton.addEventListener('click', () => {
+                        currentPage = i;
+                        fetchCameras(username, cameraType, status, currentPage, perPage);
+                    });
+                    paginationControls.appendChild(pageButton);
+                }
+            });
+    }
 
+    document.getElementById('camera_type_filter').addEventListener('change', () => {
+        const cameraType = document.getElementById('camera_type_filter').value;
+        const status = document.getElementById('status_filter').value;
+        fetchCameras(username, cameraType, status, currentPage, perPage);
+    });
+
+    document.getElementById('status_filter').addEventListener('change', () => {
+        const cameraType = document.getElementById('camera_type_filter').value;
+        const status = document.getElementById('status_filter').value;
+        fetchCameras(username, cameraType, status, currentPage, perPage);
+    });
+
+    // Initial fetch without filters
+    fetchCameras(username, '', '', currentPage, perPage);
     getCameraCountsByType(username);
-   
-        
 </script>
-
-
-{% endblock %}
-
-{% block title %}
 
 {% endblock %}

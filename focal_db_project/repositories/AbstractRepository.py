@@ -93,4 +93,7 @@ class AbstractRepository(abc.ABC):
     def get_camera_list_by_type_for_user(self, camera_type: str, user_id: int) -> List[Camera]:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_camera_by_user_paginate(self, user_id: int, camera_type: str = None, status: str = None, page: int = 1, per_page: int = 5):
+        raise NotImplementedError
 
