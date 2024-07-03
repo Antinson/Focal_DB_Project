@@ -26,7 +26,7 @@ class SQLAlchemyRepository(AbstractRepository):
         try:
             user = User.query.filter_by(username=username).first()
             if user is None:
-                raise RepositoryException(f"User with ID {useername} not found.")
+                raise RepositoryException(f"User with ID {username} not found.")
             return user
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while retrieving the user: {e}")
