@@ -1,4 +1,6 @@
-from focal_db_project import create_app
+from focal_db_project import create_app, db
+from werkzeug.security import generate_password_hash
+from focal_db_project.models import User
 
 app = create_app()
 
