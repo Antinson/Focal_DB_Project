@@ -5,56 +5,47 @@
 <div class="container mx-auto p-4">
     <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
     <input type="hidden" id="username" value="{{ username }}">
-    
-    <div class="mb-4">
-        <label for="camera_type_filter" class="block text-lg font-semibold">Filter by Camera Type:</label>
-        <select id="camera_type_filter" class="block w-full mt-2 p-2 border rounded">
-            <option value="">All</option>
-            <option value="Type1">Type1</option>
-            <option value="Type2">Type2</option>
-            <!-- Add more options as needed -->
-        </select>
-    </div>
-    <div class="mb-4">
-        <label for="status_filter" class="block text-lg font-semibold">Filter by Status:</label>
-        <select id="status_filter" class="block w-full mt-2 p-2 border rounded">
-            <option value="">All</option>
-            <option value="Working">Working</option>
-            <option value="Broken">Broken</option>
-            <!-- Add more options as needed -->
-        </select>
-    </div>
-    
-    <div id="chart-container" class="grid grid-cols-2 gap-4 w-full h-auto">
+
+    <div id="chart-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-auto">
         <div class="bg-gray-50 p-4 flex flex-col justify-center items-center">
-            <h2 class="text-xl font-semibold text-center mb-4">{{username | upper}} Camera Storage</h2> <!-- Title for the first column -->
+            <h2 class="text-xl font-semibold text-center mb-4">{{username | upper}} Camera Storage</h2>
             <div class="flex justify-center items-center">
                 <canvas id="myPieChart" class="w-full max-w-xs h-auto"></canvas>
-            </div>            
-        </div>
-        <div class="container mx-auto p-4 bg-gray-50">
-            <h1 class="text-4xl font-bold mb-4">Download data</h1>
-            <select name="download_format" id="formats">
-                <option value="excel">Excel</option>
-                <option value="json">Json</option>
-            </select>
-            <button id="download">Download</button>
-        </div>
-        <div class="container mx-auto p-4 bg-gray-50">
-            <h1 class="text-4xl font-bold mb-4">Summary data</h1>
-            <div id="summary_container">
-
             </div>
         </div>
-        <div class="p-4 flex flex-col justify-center items-center bg-gray-50">
-            <h2 class="text-xl font-semibold text-center mb-4">My Cameras</h2>
-            <!-- Title for the first column -->
-            <div id="camera_table" class="flex justify-center items-center"></div>
+        <div class="bg-gray-50 p-4 flex flex-col justify-center items-center">
+            <h1 class="text-xl font-bold mb-4">Download data</h1>
+            <div class="flex flex-col items-center">
+                <select name="download_format" id="formats" class="block w-full mt-2 p-2 border rounded">
+                    <option value="excel">Excel</option>
+                    <option value="json">Json</option>
+                </select>
+                <button id="download" class="mt-4 p-2 bg-blue-500 text-white rounded">Download</button>
+            </div>
         </div>
-    </div>
-    
-    <div id="pagination-controls" class="flex justify-center mt-4">
-        <!-- Pagination buttons will be appended here -->
+        <div class="bg-gray-50 p-4">
+            <h1 class="text-xl font-bold mb-4">Summary data</h1>
+            <div id="summary_container"></div>
+        </div>
+        <div class="bg-gray-50 p-4 w-full">
+            <h2 class="text-xl font-semibold text-center mb-4">My Cameras</h2>
+            <div class="mb-4 w-full">
+                <label for="camera_type_filter" class="block text-lg font-semibold">Filter by Camera Type:</label>
+                <select id="camera_type_filter" class="block w-full mt-2 p-2 border rounded">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="mb-4 w-full">
+                <label for="status_filter" class="block text-lg font-semibold">Filter by Status:</label>
+                <select id="status_filter" class="block w-full mt-2 p-2 border rounded">
+                    <option value="">All</option>
+                    <option value="Working">Working</option>
+                    <option value="Broken">Broken</option>
+                </select>
+            </div>
+            <div id="camera_table" class="w-full overflow-x-auto"></div>
+            <div id="pagination-controls" class="flex justify-center mt-4 w-full"></div>
+        </div>
     </div>
 </div>
 
@@ -133,7 +124,7 @@
             url += `&camera_type=${cameraType}`;
         }
         if (status) {
-            url += `&status=${status}`;
+            url += `&status=${status.toLowerCase()}`;
         }
 
         fetch(url)
@@ -214,9 +205,27 @@
         fetchCameras(username, cameraType, status, currentPage, perPage);
     });
 
+    const createSelectionValues = () => {
+        const selectOptions = document.getElementById('camera_type_filter');
+
+        fetch(`/api/get-camera-counts-by-type/${username}`)
+        .then(response => response.json())
+        .then(data => {
+            for (const [type, count] of Object.entries(data)) {
+                const displayType = type == 'None' ? 'Unknown' : type;
+                const newOption = document.createElement('option')
+                newOption.value = `${displayType}`;
+                newOption.text = `${displayType}`;
+                selectOptions.appendChild(newOption);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
     // Initial fetch without filters
     fetchCameras(username, '', '', currentPage, perPage);
     getCameraCountsByType(username);
+    createSelectionValues();
 </script>
 
 {% endblock %}

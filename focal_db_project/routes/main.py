@@ -205,8 +205,6 @@ def get_camera_user(username):
             'camera_type': camera.camera_type
         } for camera in users_cameras.items]
 
-        print(camera_data)
-
         return jsonify({
             'data': camera_data,
             'total': users_cameras.total,
