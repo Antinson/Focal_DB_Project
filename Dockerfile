@@ -1,14 +1,15 @@
-FROM python:3.9-slim
+FROM python:3.11.5-slim
 
-WORKDIR /app
+WORKDIR /focal_db_project
 
 COPY requirements.txt requirements.txt
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 8080
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "60", "wsgi:app"]
+ENV PORT 8080
 
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:app"]
