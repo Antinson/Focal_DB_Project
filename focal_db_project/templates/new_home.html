@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <div id = "body-container" class="mx-auto p-4">
+        <div id="header-filters" class="flex space-x-4 bg-gray-200 p-4">
+            <div id="country-filter-container" class="flex flex-col">
+                <label>COUNTRY</label>
+                <select id="country-filter" class="w-40 cursor-pointer">
+                    <option>Dropdown</option>
+                    <option>Nz</option>
+                    <option>Au</option>
+                </select>
+            </div>
+            <div id="user-filter-container" class="flex flex-col">
+                <label>USER</label>
+                <select id="user-filter" class="w-40 cursor-pointer">
+                    <option>Dropdown</option>
+                    <option>Ant</option>
+                    <option>Adam</option>
+                </select>
+            </div>
+            <div id="camera-type-filter-container" class="flex flex-col">
+                <label>CAMERA TYPE</label>
+                <select id="camera-type-filter" class="w-40 cursor-pointer">
+                    <option>Dropdown</option>
+                    <option>FM-40</option>
+                    <option>FM-62</option>
+                </select>
+            </div>
+            <div id="camera-status-filter-container" class="flex flex-col">
+                <label>CAMERA STATUS</label>
+                <select id="camera-status-filter" class="w-40 cursor-pointer">
+                    <option>Dropdown</option>
+                    <option>Working</option>
+                    <option>Broken</option>
+                </select>
+            </div>
+        </div>
+        <div id="chart-area" class="flex space-x-2 flex-row my-6">
+            <div id="chart-left" class="bg-gray-200 p-2">
+                <div id="total-camera-div" class="flex space-x-4 flex-row">
+                    <div>
+                        <h1 class="text-lg mb-4">Total Cameras</h1>
+                        <h1 id="total-camera-num" class="text-4xl mb-4">200</h1>
+                    </div>
+                    <div>
+                        <h1 id="working-camera-num" class="text-lg mb-2">100</h1>
+                        <h1 class="text-xs mb-2">Working</h1>
+                        <h1 id="broken-camera-num" class="text-lg mb-2">100</h1>
+                        <h1 class="text-xs mb-2">Broken</h1>
+                    </div>
+                </div>
+            </div>
+            <div id="chart-right">
+                <div id="main-chart">
+                    <p>hey</p>
+                </div>
+            </div>
+        </div>
+        <div id="table-area">
+            <table class="table-auto inline-table w-full bg-gray-100 rounded-lg"><thead>
+                <tr>
+                    <th class="px-4 py-2 text-left">Camera Name</th>
+                    <th class="px-4 py-2 text-left">Status</th>
+                    <th class="px-4 py-2 text-left">Type</th>
+                    <th class="px-4 py-2 text-left">Country</th>
+                </tr>
+            </thead><tbody><tr>
+                    <td class="border px-4 py-2">50:02:91:8D:0C:D0</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:8D:0C:D0">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:92:79:88</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:92:79:88">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:92:90:5C</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:92:90:5C">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:AB:9C:DC</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:AB:9C:DC">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:85:6D:2C</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:85:6D:2C">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:AB:9C:28</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:AB:9C:28">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:8E:E9:8C</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:8E:E9:8C">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:AA:86:9C</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:AA:86:9C">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:85:73:54</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:85:73:54">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:92:64:00</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:92:64:00">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:A1:F6:48</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:A1:F6:48">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:AB:A9:B0</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:AB:A9:B0">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:AB:90:A8</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:AB:90:A8">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:92:72:E4</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:92:72:E4">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:AA:4B:EC</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:AA:4B:EC">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:8D:85:78</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:8D:85:78">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:91:41:DC</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:91:41:DC">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:86:4B:58</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:86:4B:58">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:8A:FA:7C</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:8A:FA:7C">Edit</button></td>
+                </tr><tr>
+                    <td class="border px-4 py-2">50:02:91:86:62:78</td>
+                    <td class="border px-4 py-2">working</td>
+                    <td class="border px-4 py-2">SE-88</td>
+                    <td class="border px-4 py-2"><button class="edit-button" data-camera-name="50:02:91:86:62:78">Edit</button></td>
+                </tr></tbody></table>
+        </div>
+    </div>
+    <script type="module" src="{{ url_for('static', filename='js/userlist.js') }}"></script>
+{% endblock %}

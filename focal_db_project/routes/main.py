@@ -287,3 +287,7 @@ def delete_camera():
         return jsonify({'message': 'Deletion Successful'})
     except Exception as e:
         return jsonify({'message': 'Something went wrong'})
+
+@main_bp.route('/test')
+def test():
+    return render_template('new_home.html')
