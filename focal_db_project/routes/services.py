@@ -88,4 +88,5 @@ def get_camera_by_user_paginate(user_id: int, repo: AbstractRepository, camera_t
     return repo.get_camera_by_user_paginate(user_id, camera_type, status, page, per_page)
 
 
-
+def get_camera_by_filters(repo: AbstractRepository, user_id = None, country = None, camera_type = None, camera_status = None):
+    return repo.get_camera_by_filters(user_id, country, camera_type, camera_status)

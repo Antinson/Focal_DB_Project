@@ -97,3 +97,6 @@ class AbstractRepository(abc.ABC):
     def get_camera_by_user_paginate(self, user_id: int, camera_type: str = None, status: str = None, page: int = 1, per_page: int = 5):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_camera_by_filters(self, user_id = None, country = None, camera_type = None, camera_status = None):
+        raise NotImplementedError

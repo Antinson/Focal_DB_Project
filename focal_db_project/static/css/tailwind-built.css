@@ -675,10 +675,6 @@ video {
   display: table;
 }
 
-.inline-table {
-  display: inline-table;
-}
-
 .grid {
   display: grid;
 }
@@ -689,6 +685,10 @@ video {
 
 .h-6 {
   height: 1.5rem;
+}
+
+.h-64 {
+  height: 16rem;
 }
 
 .h-auto {

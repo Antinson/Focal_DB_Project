@@ -291,3 +291,36 @@ def delete_camera():
 @main_bp.route('/test')
 def test():
     return render_template('new_home.html')
+
+
+@main_bp.route('/api/get-cameras-dash', methods=['GET'])
+def get_cameras_dash():
+
+    # Get filter values from request
+    country = "NZ"
+    user = request.args.get('user', '')
+    camera_type = request.args.get('cameraType', '')
+    camera_status = request.args.get('cameraStatus', '')
+
+    if (user):
+        user_filter = services.get_user_by_username(user, current_app.repo)
+        user_filter = user_filter.id
+    else:
+        user_filter = ""
+
+    filtered_data = services.get_camera_by_filters(user_id=user_filter, country=country, camera_type=camera_type, camera_status=camera_status, repo=current_app.repo)
+
+    camera_data = [{
+            'camera_name': camera.name,
+            'camera_status': camera.status,
+            'camera_user_id': camera.user_id,
+            'camera_storage': camera.storage,
+            'camera_type': camera.camera_type,
+            'camera_country': country
+    } for camera in filtered_data]
+
+
+    return jsonify(camera_data)
+
+@main_bp.route('/api/get-cameras-dash', methods=['GET'])
+def get_cameras_dash():
