@@ -40,7 +40,7 @@ def register_user():
     if request.method == 'POST':
         try:
             data = request.json
-            username = data.get('username')
+            username = data.get('username').lower()
             password = data.get('password')
             role = data.get('role')
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')

@@ -206,12 +206,62 @@ class SQLAlchemyRepository(AbstractRepository):
 
     
     def get_distinct_users(self, country: str):
-        raise NotImplementedError
+        try:
+            query = db.session.query(User.username).distinct()
+            if country:
+                query = query.filter(User.country == country)
+            users = [user[0] for user in query.all()]
+            return users
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting users by country: {e}")
+
     
     
     def get_distinct_camera_types(self, country: str, user_id: int, camera_status: str):
-        raise NotImplementedError
-    
+        try:
+            query = db.session.query(Camera.camera_type)
+            
+            if country:
+                query = query.join(User).filter(User.country == country)
+            if user_id:
+                query = query.filter(Camera.user_id == user_id)
+            if camera_status:
+                query.filter(Camera.status == camera_status)
+
+            camera_types = query.distinct().all()
+            
+            return [camera_type[0] for camera_type in camera_types]
+        
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting camera_types: {e}")
+
  
     def get_distinct_camera_statuses(self, country: str, user_id: int, camera_type: str):
-        raise NotImplementedError
+        try:
+            query = db.session.query(Camera.status)
+
+            if country:
+                query = query.join(User).filter(User.country == country)
+            if user_id:
+                query = query.filter(Camera.user_id == user_id)
+            if camera_type:
+                query = query.filter(Camera.camera_type == camera_type)
+    
+            found_statuses = set()
+            for camera in query.distinct():
+                found_statuses.add(camera.status)
+                if 'broken' in found_statuses and 'working' in found_statuses:
+                    break
+
+            return list(found_statuses)
+        
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting camera_types: {e}")
+    
+    def get_distinct_countries(self):
+        try:
+            query = db.session.query(User.country).distinct()
+            countries = [country[0] for country in query.all()]
+            return countries
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting countries: {e}")

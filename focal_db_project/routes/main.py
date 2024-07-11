@@ -336,11 +336,15 @@ def get_filtered_options():
     else:
         user_filter = None
     
+    countries = services.get_distinct_countries(repo=current_app.repo)
     users = services.get_distinct_users(country, camera_type, camera_status, current_app.repo)
     camera_types = services.get_distinct_camera_types(country, user_filter, camera_status, current_app.repo)
     camera_statuses = services.get_distinct_camera_statuses(country, user_filter, camera_type, current_app.repo)
 
+    
+
     filter_options = {
+        'countries': countries,
         'users': users,
         'camera_types': camera_types,
         'camera_statuses': camera_statuses

@@ -112,3 +112,7 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_distinct_camera_statuses(self, country: str, user_id: int, camera_type: str):
         raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_distinct_countries(self):
+        raise NotImplementedError
