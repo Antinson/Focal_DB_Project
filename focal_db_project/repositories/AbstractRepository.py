@@ -100,3 +100,15 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_camera_by_filters(self, user_id = None, country = None, camera_type = None, camera_status = None):
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_distinct_users(self, country: str):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_distinct_camera_types(self, country: str, user_id: int, camera_status: str):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_distinct_camera_statuses(self, country: str, user_id: int, camera_type: str):
+        raise NotImplementedError

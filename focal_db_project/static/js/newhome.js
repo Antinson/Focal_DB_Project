@@ -19,16 +19,17 @@ const updateTable = (filters) => {
     fetch(`/api/get-cameras-dash?${params.toString()}`)
     .then(response => response.json())
     .then(data => {
-        const tableBody = document.getElementById('table-body');
+        const tableBody = document.querySelector('#table-body tbody');
         tableBody.innerHTML = '';
 
         data.forEach(camera => {
             const row = document.createElement('tr');
             row.innerHTML = `
                         <td class="border px-4 py-2">${camera.camera_name}</td>
-                        <td class="border px-4 py-2">${camera.camera_status}</td>
                         <td class="border px-4 py-2">${camera.camera_type}</td>
+                        <td class="border px-4 py-2">${camera.camera_status}</td>
                         <td class="border px-4 py-2">${camera.camera_country}</td>
+                        <td class="border px-4 py-2">${camera.camera_storage}</td>
                         `;
             tableBody.appendChild(row);
         });

@@ -19,6 +19,7 @@ def get_user(user_id: int, repo: AbstractRepository):
     return repo.get_user(user_id)
 
 def get_user_by_username(username: str, repo: AbstractRepository):
+    username = username.lower()
     return repo.get_user_by_username(username)
 
 def get_user_list(repo: AbstractRepository):
@@ -90,3 +91,14 @@ def get_camera_by_user_paginate(user_id: int, repo: AbstractRepository, camera_t
 
 def get_camera_by_filters(repo: AbstractRepository, user_id = None, country = None, camera_type = None, camera_status = None):
     return repo.get_camera_by_filters(user_id, country, camera_type, camera_status)
+
+def get_distinct_users(country: str, repo: AbstractRepository):
+    pass
+
+def get_distinct_camera_types(country: str, user_id: int, camera_status: str, repo: AbstractRepository):
+    pass
+
+def get_distinct_camera_statuses(country: str, user_id: int, camera_type: str, repo: AbstractRepository):
+    pass
+
+

@@ -322,5 +322,29 @@ def get_cameras_dash():
 
     return jsonify(camera_data)
 
-@main_bp.route('/api/get-cameras-dash', methods=['GET'])
-def get_cameras_dash():
+@main_bp.route('/api/get-filtered-options', methods=['GET'])
+def get_filtered_options():
+
+    country = request.args.get('country', '')
+    user = request.args.get('user', '')
+    camera_type = request.args.get('cameraType', '')
+    camera_status = request.args.get('cameraStatus', '')
+
+    if user:
+        user_filter = services.get_user_by_username(user, current_app.repo)
+        user_filter = user_filter.id if user_filter else None
+    else:
+        user_filter = None
+    
+    users = services.get_distinct_users(country, camera_type, camera_status, current_app.repo)
+    camera_types = services.get_distinct_camera_types(country, user_filter, camera_status, current_app.repo)
+    camera_statuses = services.get_distinct_camera_statuses(country, user_filter, camera_type, current_app.repo)
+
+    filter_options = {
+        'users': users,
+        'camera_types': camera_types,
+        'camera_statuses': camera_statuses
+    }
+
+    return jsonify(filter_options)
+

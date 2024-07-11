@@ -203,3 +203,15 @@ class SQLAlchemyRepository(AbstractRepository):
             return query.all()
         except Exception as e:
             raise RepositoryException(f"An error occurred while getting cameras by filters: {e}")
+
+    
+    def get_distinct_users(self, country: str):
+        raise NotImplementedError
+    
+    
+    def get_distinct_camera_types(self, country: str, user_id: int, camera_status: str):
+        raise NotImplementedError
+    
+ 
+    def get_distinct_camera_statuses(self, country: str, user_id: int, camera_type: str):
+        raise NotImplementedError
