@@ -99,7 +99,7 @@ def get_distinct_camera_types(country: str, user_id: int, camera_status: str, re
     return repo.get_distinct_camera_types(country, user_id, camera_status)
 
 def get_distinct_camera_statuses(country: str, user_id: int, camera_type: str, repo: AbstractRepository):
-    repo.get_distinct_camera_statuses(country, user_id, camera_type)
+    return repo.get_distinct_camera_statuses(country, user_id, camera_type)
 
 def get_distinct_countries(repo: AbstractRepository):
     return repo.get_distinct_countries()

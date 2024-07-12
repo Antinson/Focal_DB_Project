@@ -248,10 +248,12 @@ class SQLAlchemyRepository(AbstractRepository):
                 query = query.filter(Camera.camera_type == camera_type)
     
             found_statuses = set()
-            for camera in query.distinct():
+            for camera in query.distinct().all():
                 found_statuses.add(camera.status)
                 if 'broken' in found_statuses and 'working' in found_statuses:
                     break
+            
+            print(f"Returning statuses: {found_statuses}")  # Debug statement to print found statuses
 
             return list(found_statuses)
         

@@ -341,7 +341,7 @@ def get_filtered_options():
     camera_types = services.get_distinct_camera_types(country, user_filter, camera_status, current_app.repo)
     camera_statuses = services.get_distinct_camera_statuses(country, user_filter, camera_type, current_app.repo)
 
-    
+    print(camera_statuses)
 
     filter_options = {
         'countries': countries,
