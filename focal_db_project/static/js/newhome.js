@@ -13,9 +13,9 @@ function showCheckboxes(checkboxesId) {
 }
 
 function closeAllCheckboxes() {
-    document.querySelectorAll('.checkboxes').forEach(checkbox => {
-        checkbox.style.display = 'none';
-        updateSelectBoxLabel(checkbox.closest('.multi-select').querySelector('.select-box').getAttribute('data-checkboxes-id'));
+    document.querySelectorAll('.checkboxes').forEach(checkboxContainer => {
+        checkboxContainer.style.display = 'none';
+        updateSelectBoxLabel(checkboxContainer.id);
     });
 }
 
@@ -92,13 +92,13 @@ function updateSelectBoxLabel(checkboxesId) {
     const selectBox = document.querySelector(`[data-checkboxes-id="${checkboxesId}"] select`);
 
     if (selectedValues.length === 0) {
-        selectBox.value = 'Dropdown';
+        selectBox.innerHTML = '<option value="">Dropdown</option>';
     } else if (selectedValues.length === 1) {
-        selectBox.value = selectedValues[0];
+        selectBox.innerHTML = `<option value="${selectedValues[0]}">${selectedValues[0]}</option>`;
     } else if (selectedValues.length === document.querySelectorAll(`#${checkboxesId} .checkbox`).length) {
-        selectBox.value = '(ALL)';
+        selectBox.innerHTML = '<option value="">(ALL)</option>';
     } else {
-        selectBox.value = 'Multiple Selections';
+        selectBox.innerHTML = '<option value="">Multiple Selections</option>';
     }
 }
 
