@@ -136,6 +136,7 @@ function updateTable(filters) {
         tableBody.innerHTML = '';
 
         const cameras = data.cameras;
+        const camera_names = cameras.map(camera => camera.camera_name);
         const counts = data.counts;
 
         cameras.forEach(camera => {
@@ -150,6 +151,8 @@ function updateTable(filters) {
             tableBody.appendChild(row);
         });
         updateCounts(counts);
+        getTimeStamps(camera_names);
+
     })
     .catch(error => console.error('Error fetching table data:', error));
 }
@@ -255,14 +258,7 @@ document.addEventListener('click', (event) => {
     }
 }, true);
 
-const getTimeStamps = () => {
-    const cameraNames = [
-        '50:02:91:8D:0C:D0', 
-        '50:02:91:92:79:88', 
-        '50:02:91:92:90:5C', 
-        '50:02:91:92:8E:2C', 
-        '50:02:91:84:93:70'
-    ];
+const getTimeStamps = (cameraNames) => {
 
     fetch('/api/get-timestamps', {
         method: 'POST',
@@ -282,8 +278,8 @@ const getTimeStamps = () => {
 }
 
 const processChartData = (data) => {
+    const initialWorkingCameras = data.length;  // Initial total working cameras
     const workingData = {};
-    const brokenData = {};
     const dateRange = [];
 
     // Create a date range array for the last 14 days
@@ -293,30 +289,31 @@ const processChartData = (data) => {
         const dateString = date.toISOString().split('T')[0];
         dateRange.unshift(dateString);
         workingData[dateString] = 0;
-        brokenData[dateString] = 0;
     }
 
-    // Process data
+    // Process data to count broken cameras each day
     data.forEach(entry => {
         const date = entry.timestamp.split('T')[0];
-        if (date in workingData) {
-            if (entry.status === 'working') {
-                workingData[date]++;
-            } else if (entry.status === 'broken') {
-                brokenData[date]++;
-            }
+        if (date in workingData && entry.status === 'broken') {
+            workingData[date]++;
         }
     });
 
-    // Prepare data for Chart.js
-    const workingCounts = dateRange.map(date => workingData[date]);
-    const brokenCounts = dateRange.map(date => brokenData[date]);
+    // Calculate the cumulative number of working cameras each day
+    let cumulativeWorking = initialWorkingCameras;
+    const cumulativeWorkingData = dateRange.map(date => {
+        cumulativeWorking -= workingData[date];
+        return cumulativeWorking;
+    });
 
-    createChart(dateRange, workingCounts, brokenCounts);
+    createChart(dateRange, cumulativeWorkingData);
 }
 
-const createChart = (labels, workingData, brokenData) => {
+const createChart = (labels, workingData) => {
     const ctx = document.createElement('canvas');
+    ctx.width = 600;  // Set the width of the canvas
+    ctx.height = 300; // Set the height of the canvas
+
     const mainChartDiv = document.getElementById('main-chart');
     mainChartDiv.innerHTML = '';  // Clear any existing content
     mainChartDiv.appendChild(ctx);  // Append the new canvas element
@@ -329,14 +326,14 @@ const createChart = (labels, workingData, brokenData) => {
                 {
                     label: 'Working Cameras',
                     data: workingData,
-                    borderColor: 'green',
-                    fill: false
-                },
-                {
-                    label: 'Broken Cameras',
-                    data: brokenData,
-                    borderColor: 'red',
-                    fill: false
+                    borderColor: 'rgba(40, 153, 109, 0.9)',
+                    backgroundColor: 'rgba(48, 185, 132, 0.1)', // Light green background for the line
+                    fill: true,
+                    tension: 0.4, // Smooth the line
+                    pointRadius: 0, // Hide points
+                    pointHoverRadius: 5, // Show points on hover
+                    pointBackgroundColor: 'rgba(40, 153, 109, 0.9)', // Same as line color to blend in
+                    pointHoverBackgroundColor: 'rgba(40, 153, 109, 0.9)' // Ensure the hover color matches
                 }
             ]
         },
@@ -350,15 +347,58 @@ const createChart = (labels, workingData, brokenData) => {
                     title: {
                         display: true,
                         text: 'Date'
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 14
                     }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Number of Cameras'
+                        text: 'Working Cameras'
+                    },
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1, // Ensure y-axis has whole numbers
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value : null;
+                        }
                     }
                 }
-            }
+            },
+            plugins: {
+                legend: {
+                    display: false // Hide legend
+                },
+                tooltip: {
+                    enabled: true // Enable tooltips
+                },
+                title: {
+                    display: true,
+                    text: 'Working Cameras Over Time'
+                }
+            },
+            elements: {
+                point: {
+                    radius: 0, // Hide points by default
+                    hoverRadius: 5, // Show points on hover
+                    pointStyle: 'circle'
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false // Allow the chart to take the size of its container
         }
     });
 }
+
+
+
+
+
+
+
+
+
+
+
