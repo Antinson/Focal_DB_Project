@@ -381,11 +381,15 @@ def get_filtered_options():
 
 @main_bp.route('/api/get-timestamps', methods=['POST'])
 def get_timestamps_from_list():
+
+    print('In here')
     
     data = request.json
     camera_names = data.get('camera_names', [])
 
     camera_timestamps = services.get_camera_latest_timestamps_from_list(camera_names, current_app.repo)
+
+    print('Over here')
 
     response_data = [{'timestamp': ts.isoformat(), 'status': status} for ts, status in camera_timestamps]
 

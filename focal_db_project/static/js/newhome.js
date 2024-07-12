@@ -151,7 +151,7 @@ function updateTable(filters) {
             tableBody.appendChild(row);
         });
         updateCounts(counts);
-        getTimeStamps(camera_names);
+        getTimeStamps(camera_names, counts.total);
 
     })
     .catch(error => console.error('Error fetching table data:', error));
@@ -188,7 +188,6 @@ function updateCounts(counts) {
 
 // DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    getTimeStamps();
     const filters = [
         { id: 'country-filter-container', checkboxesId: 'country-checkboxes' },
         { id: 'user-filter-container', checkboxesId: 'user-checkboxes' },
@@ -258,7 +257,9 @@ document.addEventListener('click', (event) => {
     }
 }, true);
 
-const getTimeStamps = (cameraNames) => {
+const getTimeStamps = (cameraNames, count) => {
+    if (!cameraNames || cameraNames.length === 0) return;
+    console.log('Start of getTimeStamps');
 
     fetch('/api/get-timestamps', {
         method: 'POST',
@@ -270,17 +271,19 @@ const getTimeStamps = (cameraNames) => {
     .then(response => response.json())
     .then(data => {
         console.log('Timestamps and statuses:', data);
-        processChartData(data);
+        processChartData(data, count);
     })
     .catch(error => {
         console.error('Error fetching timestamps:', error);
     });
 }
 
-const processChartData = (data) => {
-    const initialWorkingCameras = data.length;  // Initial total working cameras
+const processChartData = (data, count) => {
+    const initialWorkingCameras = count;  // Initial total working cameras
     const workingData = {};
     const dateRange = [];
+
+    console.log('Start of ProcessChartData');
 
     // Create a date range array for the last 14 days
     for (let i = 0; i < 14; i++) {
@@ -305,14 +308,15 @@ const processChartData = (data) => {
         cumulativeWorking -= workingData[date];
         return cumulativeWorking;
     });
+    console.log('End of ProcessChartData');
 
     createChart(dateRange, cumulativeWorkingData);
 }
 
 const createChart = (labels, workingData) => {
     const ctx = document.createElement('canvas');
-    ctx.width = 600;  // Set the width of the canvas
-    ctx.height = 300; // Set the height of the canvas
+    ctx.width = 800;  // Set the width of the canvas
+    ctx.height = 400; // Set the height of the canvas
 
     const mainChartDiv = document.getElementById('main-chart');
     mainChartDiv.innerHTML = '';  // Clear any existing content
@@ -328,12 +332,8 @@ const createChart = (labels, workingData) => {
                     data: workingData,
                     borderColor: 'rgba(40, 153, 109, 0.9)',
                     backgroundColor: 'rgba(48, 185, 132, 0.1)', // Light green background for the line
-                    fill: true,
-                    tension: 0.4, // Smooth the line
+                    tension: 0.1, // Smooth the line
                     pointRadius: 0, // Hide points
-                    pointHoverRadius: 5, // Show points on hover
-                    pointBackgroundColor: 'rgba(40, 153, 109, 0.9)', // Same as line color to blend in
-                    pointHoverBackgroundColor: 'rgba(40, 153, 109, 0.9)' // Ensure the hover color matches
                 }
             ]
         },
@@ -379,26 +379,8 @@ const createChart = (labels, workingData) => {
                     text: 'Working Cameras Over Time'
                 }
             },
-            elements: {
-                point: {
-                    radius: 0, // Hide points by default
-                    hoverRadius: 5, // Show points on hover
-                    pointStyle: 'circle'
-                }
-            },
             responsive: true,
             maintainAspectRatio: false // Allow the chart to take the size of its container
         }
     });
 }
-
-
-
-
-
-
-
-
-
-
-

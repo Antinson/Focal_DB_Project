@@ -4,129 +4,129 @@
 
 <style>
     .multi-select {
-    position: relative;
-    display: inline-block;
-}
+        position: relative;
+        display: inline-block;
+    }
 
-.select-box {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
+    .select-box {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        width: 200px; /* Fixed width for all select boxes */
+    }
 
-.over-select {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-}
+    .over-select {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
 
-.checkboxes {
-    display: none;
-    border: 1px solid #dadada;
-    position: absolute;
-    z-index: 1;
-    background: #fff;
-    width: 100%;
-}
+    .checkboxes {
+        display: none;
+        border: 1px solid #dadada;
+        position: absolute;
+        z-index: 1;
+        background: #fff;
+        width: 100%;
+    }
 
-.checkboxes label {
-    display: block;
-    padding: 5px;
-    cursor: pointer;
-}
+    .checkboxes label {
+        display: block;
+        padding: 5px;
+        cursor: pointer;
+    }
 
-.checkboxes label:hover {
-    background: #f0f0f0;
-}
-
+    .checkboxes label:hover {
+        background: #f0f0f0;
+    }
 </style>
 
-<div id="body-container" class="mx-auto p-4 flex-grow flex flex-col">
-    <div id="header-filters" class="flex space-x-4 bg-gray-200 p-4">
+<div id="body-container" class="mx-auto p-4 flex-grow flex flex-col space-y-6 h-screen">
+    <div id="header-filters" class="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-md items-start">
         <div id="country-filter-container" class="flex flex-col multi-select">
-            <label>COUNTRY</label>
-            <div class="select-box" data-checkboxes-id="country-checkboxes">
-                <select class="w-40 cursor-pointer">
+            <label class="mb-2 font-semibold text-gray-700">COUNTRY</label>
+            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="country-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none">
                     <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
             </div>
-            <div id="country-checkboxes" class="checkboxes">
-                <label for="country-select-all">
-                    <input type="checkbox" id="country-select-all"> Select All
+            <div id="country-checkboxes" class="checkboxes rounded-md shadow-md">
+                <label for="country-select-all" class="block p-2 hover:bg-gray-100">
+                    <input type="checkbox" id="country-select-all" class="mr-2"> Select All
                 </label>
                 <!-- Additional country checkboxes will be added here by JavaScript -->
             </div>
         </div>
 
         <div id="user-filter-container" class="flex flex-col multi-select">
-            <label>USER</label>
-            <div class="select-box" data-checkboxes-id="user-checkboxes">
-                <select class="w-40 cursor-pointer">
-                    <option value="">(All)</option>
+            <label class="mb-2 font-semibold text-gray-700">USER</label>
+            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="user-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none">
+                    <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
             </div>
-            <div id="user-checkboxes" class="checkboxes">
-                <label for="user-select-all">
-                    <input type="checkbox" id="user-select-all"> Select All
+            <div id="user-checkboxes" class="checkboxes rounded-md shadow-md">
+                <label for="user-select-all" class="block p-2 hover:bg-gray-100">
+                    <input type="checkbox" id="user-select-all" class="mr-2"> Select All
                 </label>
                 <!-- Additional user checkboxes will be added here by JavaScript -->
             </div>
         </div>
 
         <div id="camera-type-filter-container" class="flex flex-col multi-select">
-            <label>CAMERA TYPE</label>
-            <div class="select-box" data-checkboxes-id="camera-type-checkboxes">
-                <select class="w-40 cursor-pointer">
-                    <option value="">(All)</option>
+            <label class="mb-2 font-semibold text-gray-700">CAMERA TYPE</label>
+            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="camera-type-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none">
+                    <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
             </div>
-            <div id="camera-type-checkboxes" class="checkboxes">
-                <label for="camera-type-select-all">
-                    <input type="checkbox" id="camera-type-select-all"> Select All
+            <div id="camera-type-checkboxes" class="checkboxes rounded-md shadow-md">
+                <label for="camera-type-select-all" class="block p-2 hover:bg-gray-100">
+                    <input type="checkbox" id="camera-type-select-all" class="mr-2"> Select All
                 </label>
                 <!-- Additional camera type checkboxes will be added here by JavaScript -->
             </div>
         </div>
 
         <div id="camera-status-filter-container" class="flex flex-col multi-select">
-            <label>CAMERA STATUS</label>
-            <div class="select-box" data-checkboxes-id="camera-status-checkboxes">
-                <select class="w-40 cursor-pointer">
-                    <option value="">(All)</option>
+            <label class="mb-2 font-semibold text-gray-700">CAMERA STATUS</label>
+            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="camera-status-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none">
+                    <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
             </div>
-            <div id="camera-status-checkboxes" class="checkboxes">
-                <label for="camera-status-select-all">
-                    <input type="checkbox" id="camera-status-select-all"> Select All
+            <div id="camera-status-checkboxes" class="checkboxes rounded-md shadow-md">
+                <label for="camera-status-select-all" class="block p-2 hover:bg-gray-100">
+                    <input type="checkbox" id="camera-status-select-all" class="mr-2"> Select All
                 </label>
                 <!-- Additional camera status checkboxes will be added here by JavaScript -->
             </div>
         </div>
     </div>
 
-    <div id="chart-area" class="flex space-x-2 flex-row my-6">
-        <div id="chart-left" class="bg-gray-200 p-2">
-            <div id="total-camera-div" class="flex space-x-4 flex-row">
-                <div>
-                    <h1 class="text-lg mb-4">Total Cameras</h1>
-                    <h1 id="total-camera-num" class="text-4xl mb-4">0</h1>
-                </div>
-                <div>
-                    <h1 id="working-camera-num" class="text-lg mb-2">0</h1>
-                    <h1 class="text-xs mb-2">Working</h1>
-                    <h1 id="broken-camera-num" class="text-lg mb-2">0</h1>
-                    <h1 class="text-xs mb-2">Broken</h1>
-                </div>
+    <div id="chart-area" class="flex flex-row space-x-4 flex-grow h-3/4">
+        <div id="chart-left" class="flex flex-col space-y-4 w-1/4">
+            <div id="total-camera-div" class="bg-gray-200 p-4 rounded-lg shadow-md flex flex-col items-center">
+                <h1 class="text-lg font-semibold">Total Cameras</h1>
+                <h1 id="total-camera-num" class="text-4xl">0</h1>
+            </div>
+            <div id="working-camera-div" class="bg-gray-200 p-4 rounded-lg shadow-md flex flex-col items-center">
+                <h1 class="text-lg font-semibold">Working</h1>
+                <h1 id="working-camera-num" class="text-4xl">0</h1>
+            </div>
+            <div id="broken-camera-div" class="bg-gray-200 p-4 rounded-lg shadow-md flex flex-col items-center">
+                <h1 class="text-lg font-semibold">Broken</h1>
+                <h1 id="broken-camera-num" class="text-4xl">0</h1>
             </div>
         </div>
-        <div id="chart-right">
-            <div id="main-chart">
+        <div id="chart-right" class="bg-white p-4 rounded-lg shadow-md flex-grow">
+            <div id="main-chart" class="h-full">
                 
             </div>
         </div>

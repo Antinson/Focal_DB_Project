@@ -270,14 +270,32 @@ class SQLAlchemyRepository(AbstractRepository):
 
     def get_camera_latest_timestamps_from_list(self, camera_names: List[str]) -> List[str]:
         try:
-            result = []
-            for name in camera_names:
-                latest_scan = db.session.query(CameraScan).filter_by(camera_name=name).order_by(CameraScan.timestamp.desc()).first()
-                if latest_scan:
-                    result.append((latest_scan.timestamp, latest_scan.camera_status))
+            # Fetch the latest scans for the provided camera names in a single query
+            subquery = (
+                db.session.query(
+                    CameraScan.camera_name,
+                    db.func.max(CameraScan.timestamp).label("latest_timestamp")
+                )
+                .filter(CameraScan.camera_name.in_(camera_names))
+                .group_by(CameraScan.camera_name)
+                .subquery()
+            )
+
+            latest_scans = (
+                db.session.query(CameraScan.timestamp, CameraScan.camera_status)
+                .join(subquery, db.and_(
+                    CameraScan.camera_name == subquery.c.camera_name,
+                    CameraScan.timestamp == subquery.c.latest_timestamp
+                ))
+                .all()
+            )
+
+            # Process the results
+            result = [(scan.timestamp, scan.camera_status) for scan in latest_scans]
             return result
         except Exception as e:
             raise RepositoryException(f"An error occurred while getting latest timestamps: {e}")
+
 
     def get_camera_timestamps_single(self, camera_name: str) -> List[str]:
         try:
