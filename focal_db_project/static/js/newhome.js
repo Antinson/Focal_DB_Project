@@ -74,11 +74,14 @@ const updateTable = (filters) => {
     fetch(`/api/get-cameras-dash?${params.toString()}`)
     .then(response => response.json())
     .then(data => {
-        console.log('Table data fetched:', data);
         const tableBody = document.querySelector('#table-body tbody');
         tableBody.innerHTML = '';
 
-        data.forEach(camera => {
+        console.log(data.cameras);
+        const cameras = data.cameras;
+        const counts = data.counts;
+
+        cameras.forEach(camera => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="border px-4 py-2">${camera.camera_name}</td>
@@ -89,6 +92,7 @@ const updateTable = (filters) => {
             `;
             tableBody.appendChild(row);
         });
+        updateCounts(counts);
     })
     .catch(error => console.error('Error fetching table data:', error));
 };
@@ -144,3 +148,16 @@ const updateFilterOptions = (filterElement, options) => {
 
     filterElement.value = selectedValue;
 };
+
+const updateCounts = (counts) => {
+
+    if(!counts) {
+        console.error('Counts data not provided');
+        return
+    }
+
+    document.getElementById('total-camera-num').textContent = `${counts.total}`;
+    document.getElementById('broken-camera-num').textContent = `${counts.broken}`;
+    document.getElementById('working-camera-num').textContent = `${counts.working}`;
+
+}

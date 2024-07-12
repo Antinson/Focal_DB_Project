@@ -297,7 +297,7 @@ def test():
 def get_cameras_dash():
 
     # Get filter values from request
-    country = "NZ"
+    country = request.args.get('country', '')
     user = request.args.get('user', '')
     camera_type = request.args.get('cameraType', '')
     camera_status = request.args.get('cameraStatus', '')
@@ -310,17 +310,34 @@ def get_cameras_dash():
 
     filtered_data = services.get_camera_by_filters(user_id=user_filter, country=country, camera_type=camera_type, camera_status=camera_status, repo=current_app.repo)
 
+    total = len(filtered_data)
+    broken = len([camera for camera in filtered_data if camera.status == 'broken'])
+    working = total - broken
+
+    print(f'total {total}, broken {broken}, working {working}')
+
+
     camera_data = [{
             'camera_name': camera.name,
             'camera_status': camera.status,
             'camera_user_id': camera.user_id,
             'camera_storage': camera.storage,
             'camera_type': camera.camera_type,
-            'camera_country': country
+            'camera_country': country,
     } for camera in filtered_data]
 
+    counts = {
+        'total': total,
+        'broken': broken,
+        'working': working
+    }
 
-    return jsonify(camera_data)
+    response = {
+        'cameras': camera_data,
+        'counts': counts
+    }
+
+    return jsonify(response)
 
 @main_bp.route('/api/get-filtered-options', methods=['GET'])
 def get_filtered_options():
@@ -340,8 +357,6 @@ def get_filtered_options():
     users = services.get_distinct_users(country, camera_type, camera_status, current_app.repo)
     camera_types = services.get_distinct_camera_types(country, user_filter, camera_status, current_app.repo)
     camera_statuses = services.get_distinct_camera_statuses(country, user_filter, camera_type, current_app.repo)
-
-    print(camera_statuses)
 
     filter_options = {
         'countries': countries,
