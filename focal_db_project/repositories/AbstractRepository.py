@@ -98,21 +98,21 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_camera_by_filters(self, user_id = None, country = None, camera_type = None, camera_status = None):
+    def get_camera_by_filters(self, user_ids: List[int] = None, countries: List[str] = None, camera_types: List[str] = None, camera_statuses: List[str] = None):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_distinct_users(self, country: str):
+    def get_distinct_users(self, countries: List[str]) -> List[str]:
         raise NotImplementedError
     
     @abc.abstractmethod
-    def get_distinct_camera_types(self, country: str, user_id: int, camera_status: str):
+    def get_distinct_camera_types(self, countries: List[str], user_ids: List[int], camera_statuses: List[str]) -> List[str]:
         raise NotImplementedError
     
     @abc.abstractmethod
-    def get_distinct_camera_statuses(self, country: str, user_id: int, camera_type: str):
+    def get_distinct_camera_statuses(self, countries: List[str], user_ids: List[int], camera_types: List[str]) -> List[str]:
         raise NotImplementedError
     
     @abc.abstractmethod
-    def get_distinct_countries(self):
+    def get_distinct_countries(self) -> List[str]:
         raise NotImplementedError

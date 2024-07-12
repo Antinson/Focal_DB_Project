@@ -89,17 +89,17 @@ def get_camera_by_user_paginate(user_id: int, repo: AbstractRepository, camera_t
     return repo.get_camera_by_user_paginate(user_id, camera_type, status, page, per_page)
 
 
-def get_camera_by_filters(repo: AbstractRepository, user_id = None, country = None, camera_type = None, camera_status = None):
-    return repo.get_camera_by_filters(user_id, country, camera_type, camera_status)
+def get_camera_by_filters(repo: AbstractRepository, user_ids: List[int] = None, countries: List[str] = None, camera_types: List[str] = None, camera_statuses: List[str] = None):
+    return repo.get_camera_by_filters(user_ids, countries, camera_types, camera_statuses)
 
-def get_distinct_users(country: str, camera_type: str, camera_status: str, repo: AbstractRepository):
-    return repo.get_distinct_users(country)
+def get_distinct_users(countries: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_users(countries)
 
-def get_distinct_camera_types(country: str, user_id: int, camera_status: str, repo: AbstractRepository):
-    return repo.get_distinct_camera_types(country, user_id, camera_status)
+def get_distinct_camera_types(countries: List[str], user_ids: List[int], camera_statuses: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_camera_types(countries, user_ids, camera_statuses)
 
-def get_distinct_camera_statuses(country: str, user_id: int, camera_type: str, repo: AbstractRepository):
-    return repo.get_distinct_camera_statuses(country, user_id, camera_type)
+def get_distinct_camera_statuses(countries: List[str], user_ids: List[int], camera_types: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_camera_statuses(countries, user_ids, camera_types)
 
-def get_distinct_countries(repo: AbstractRepository):
+def get_distinct_countries(repo: AbstractRepository) -> List[str]:
     return repo.get_distinct_countries()

@@ -9,6 +9,8 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(50), nullable=False)
     country = db.Column(db.String(50), nullable=False)
 
+    cameras = db.relationship('Camera', back_populates='user')
+
 class Camera(db.Model):
     name = db.Column(db.String(120), primary_key=True)
     status = db.Column(db.String(10), nullable=False)
@@ -16,6 +18,8 @@ class Camera(db.Model):
     storage = db.Column(db.String(120), nullable=False)
     camera_type = db.Column(db.String(6), nullable=True)
 
+    user = db.relationship('User', back_populates='cameras')
+    
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(120), nullable=False)

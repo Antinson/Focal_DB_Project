@@ -293,37 +293,45 @@ def test():
     return render_template('new_home.html')
 
 
-@main_bp.route('/api/get-cameras-dash', methods=['GET'])
+@main_bp.route('/api/get-cameras-dash', methods=['POST'])
 def get_cameras_dash():
-
     # Get filter values from request
-    country = request.args.get('country', '')
-    user = request.args.get('user', '')
-    camera_type = request.args.get('cameraType', '')
-    camera_status = request.args.get('cameraStatus', '')
+    data = request.json
+    countries = data.get('country', [])
+    users = data.get('user', [])
+    camera_types = data.get('cameraType', [])
+    camera_statuses = data.get('cameraStatus', [])
 
-    if (user):
-        user_filter = services.get_user_by_username(user, current_app.repo)
-        user_filter = user_filter.id
-    else:
-        user_filter = ""
+    user_filters = []
+    if users:
+        for user in users:
+            user_obj = services.get_user_by_username(user, current_app.repo)
+            if user_obj:
+                user_filters.append(user_obj.id)
 
-    filtered_data = services.get_camera_by_filters(user_id=user_filter, country=country, camera_type=camera_type, camera_status=camera_status, repo=current_app.repo)
+    filtered_data = services.get_camera_by_filters(
+        repo=current_app.repo, 
+        user_ids=user_filters, 
+        countries=countries, 
+        camera_types=camera_types, 
+        camera_statuses=camera_statuses
+    )
 
     total = len(filtered_data)
     broken = len([camera for camera in filtered_data if camera.status == 'broken'])
     working = total - broken
 
     print(f'total {total}, broken {broken}, working {working}')
-
-
+    print(f'User filters: {user_filters}')
+    
+    print('')
     camera_data = [{
-            'camera_name': camera.name,
-            'camera_status': camera.status,
-            'camera_user_id': camera.user_id,
-            'camera_storage': camera.storage,
-            'camera_type': camera.camera_type,
-            'camera_country': country,
+        'camera_name': camera.name,
+        'camera_status': camera.status,
+        'camera_user_id': camera.user_id,
+        'camera_storage': camera.storage,
+        'camera_type': camera.camera_type,
+        'camera_country': camera.user.country,
     } for camera in filtered_data]
 
     counts = {
@@ -339,31 +347,35 @@ def get_cameras_dash():
 
     return jsonify(response)
 
-@main_bp.route('/api/get-filtered-options', methods=['GET'])
+@main_bp.route('/api/get-filtered-options', methods=['POST'])
 def get_filtered_options():
+    data = request.json
+    countries = data.get('country', [])
+    users = data.get('user', [])
+    camera_types = data.get('cameraType', [])
+    camera_statuses = data.get('cameraStatus', [])
 
-    country = request.args.get('country', '')
-    user = request.args.get('user', '')
-    camera_type = request.args.get('cameraType', '')
-    camera_status = request.args.get('cameraStatus', '')
+    print(f'Countries: {countries} \nUsers: {users} \nCamera Types: {camera_types} \nCamera Statuses: {camera_statuses}')
 
-    if user:
-        user_filter = services.get_user_by_username(user, current_app.repo)
-        user_filter = user_filter.id if user_filter else None
-    else:
-        user_filter = None
-    
-    countries = services.get_distinct_countries(repo=current_app.repo)
-    users = services.get_distinct_users(country, camera_type, camera_status, current_app.repo)
-    camera_types = services.get_distinct_camera_types(country, user_filter, camera_status, current_app.repo)
-    camera_statuses = services.get_distinct_camera_statuses(country, user_filter, camera_type, current_app.repo)
+    user_filters = []
+    if users:
+        for user in users:
+            user_obj = services.get_user_by_username(user, current_app.repo)
+            if user_obj:
+                user_filters.append(user_obj.id)
+
+    distinct_countries = services.get_distinct_countries(repo=current_app.repo)
+    distinct_users = services.get_distinct_users(countries, current_app.repo)
+    distinct_camera_types = services.get_distinct_camera_types(countries, user_filters, camera_statuses, current_app.repo)
+    distinct_camera_statuses = services.get_distinct_camera_statuses(countries, user_filters, camera_types, current_app.repo)
 
     filter_options = {
-        'countries': countries,
-        'users': users,
-        'camera_types': camera_types,
-        'camera_statuses': camera_statuses
+        'countries': distinct_countries,
+        'users': distinct_users,
+        'camera_types': distinct_camera_types,
+        'camera_statuses': distinct_camera_statuses
     }
 
     return jsonify(filter_options)
+
 
