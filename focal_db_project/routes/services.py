@@ -1,6 +1,6 @@
 from typing import List, Iterable
 from focal_db_project.repositories import AbstractRepository
-from focal_db_project.models import User, Camera, Notification
+from focal_db_project.models import User, Camera, Notification, CameraScan
 
 class NameNotUniqueException(Exception):
     pass
@@ -103,3 +103,9 @@ def get_distinct_camera_statuses(countries: List[str], user_ids: List[int], came
 
 def get_distinct_countries(repo: AbstractRepository) -> List[str]:
     return repo.get_distinct_countries()
+
+def get_camera_latest_timestamps_from_list(camera_names: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_camera_latest_timestamps_from_list(camera_names)
+
+def get_camera_timestamps_single(camera_name: str, repo: AbstractRepository) -> List[str]:
+    return repo.get_camera_timestamps_single(camera_name)

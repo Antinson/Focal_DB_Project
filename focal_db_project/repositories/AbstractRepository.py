@@ -1,6 +1,6 @@
 import abc
 from typing import List
-from focal_db_project.models import User, Camera, Notification
+from focal_db_project.models import User, Camera, Notification, CameraScan
 
 
 class RepositoryException(Exception):
@@ -115,4 +115,12 @@ class AbstractRepository(abc.ABC):
     
     @abc.abstractmethod
     def get_distinct_countries(self) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_latest_timestamps_from_list(self, camera_names: List[str]) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_timestamps_single(self, camera_name: str) -> List[str]:
         raise NotImplementedError

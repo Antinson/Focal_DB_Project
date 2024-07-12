@@ -1,7 +1,7 @@
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from .AbstractRepository import AbstractRepository, RepositoryException
-from ..models import db, User, Camera, Notification
+from ..models import db, User, Camera, Notification, CameraScan
 from sqlalchemy.orm import joinedload
 
 class SQLAlchemyRepository(AbstractRepository):
@@ -268,3 +268,20 @@ class SQLAlchemyRepository(AbstractRepository):
         except Exception as e:
             raise RepositoryException(f"An error occurred while getting countries: {e}")
 
+    def get_camera_latest_timestamps_from_list(self, camera_names: List[str]) -> List[str]:
+        try:
+            result = []
+            for name in camera_names:
+                latest_scan = db.session.query(CameraScan).filter_by(camera_name=name).order_by(CameraScan.timestamp.desc()).first()
+                if latest_scan:
+                    result.append((latest_scan.timestamp, latest_scan.camera_status))
+            return result
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting latest timestamps: {e}")
+
+    def get_camera_timestamps_single(self, camera_name: str) -> List[str]:
+        try:
+            scans = db.session.query(CameraScan).filter_by(camera_name=camera_name).order_by(CameraScan.timestamp.desc()).all()
+            return [scan.timestamp for scan in scans]
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting timestamps for camera {camera_name}: {e}")

@@ -44,8 +44,12 @@ function updateFilterOptions(checkboxesId, options) {
     const checkboxesContainer = document.getElementById(checkboxesId);
     if (!checkboxesContainer) return;
 
+    const filterType = checkboxesId.replace('-checkboxes', '');
+    console.log(`Updating filter options for ${filterType}:`, options);
+
     // Preserve the previously selected values
-    const selectedValues = savedStates[checkboxesId.replace('-checkboxes', '')] || [];
+    const selectedValues = savedStates[filterType] || [];
+    console.log(`Previously selected values for ${filterType}:`, selectedValues);
 
     checkboxesContainer.innerHTML = `
         <label for="${checkboxesId}-select-all">
@@ -67,15 +71,20 @@ function updateFilterOptions(checkboxesId, options) {
         checkbox.addEventListener('change', () => {
             updateSelectAllState(checkboxesId);
             updateSelectBoxLabel(checkboxesId);
+            // Save the current selected values to savedStates
+            savedStates[filterType] = getSelectedCheckboxes(checkboxesId);
+            console.log(`Updated savedStates for ${filterType}:`, savedStates[filterType]);
         });
     });
 
     // Set event listener for select all checkbox
     document.getElementById(`${checkboxesId}-select-all`).addEventListener('click', (event) => {
         selectAll(checkboxesId, event.target);
+        // Save the current selected values to savedStates
+        savedStates[filterType] = getSelectedCheckboxes(checkboxesId);
+        console.log(`Updated savedStates for ${filterType}:`, savedStates[filterType]);
     });
 
-    // Update the state of the select all checkbox
     updateSelectAllState(checkboxesId);
     updateSelectBoxLabel(checkboxesId);
 }
@@ -89,6 +98,9 @@ function updateSelectAllState(checkboxesId) {
 
 function updateSelectBoxLabel(checkboxesId) {
     const selectedValues = getSelectedCheckboxes(checkboxesId);
+    const filterType = checkboxesId.replace('-checkboxes', '');
+    console.log(`Selected values for ${filterType}:`, selectedValues);
+
     const selectBox = document.querySelector(`[data-checkboxes-id="${checkboxesId}"] select`);
 
     if (selectedValues.length === 0) {
@@ -98,7 +110,7 @@ function updateSelectBoxLabel(checkboxesId) {
     } else if (selectedValues.length === document.querySelectorAll(`#${checkboxesId} .checkbox`).length) {
         selectBox.innerHTML = '<option value="">(ALL)</option>';
     } else {
-        selectBox.innerHTML = '<option value="">Multiple Selections</option>';
+        selectBox.innerHTML = '<option value="">(Multiple Selections)</option>';
     }
 }
 
@@ -173,6 +185,7 @@ function updateCounts(counts) {
 
 // DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
+    getTimeStamps();
     const filters = [
         { id: 'country-filter-container', checkboxesId: 'country-checkboxes' },
         { id: 'user-filter-container', checkboxesId: 'user-checkboxes' },
@@ -241,3 +254,111 @@ document.addEventListener('click', (event) => {
         closeAllCheckboxes();
     }
 }, true);
+
+const getTimeStamps = () => {
+    const cameraNames = [
+        '50:02:91:8D:0C:D0', 
+        '50:02:91:92:79:88', 
+        '50:02:91:92:90:5C', 
+        '50:02:91:92:8E:2C', 
+        '50:02:91:84:93:70'
+    ];
+
+    fetch('/api/get-timestamps', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ camera_names: cameraNames })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Timestamps and statuses:', data);
+        processChartData(data);
+    })
+    .catch(error => {
+        console.error('Error fetching timestamps:', error);
+    });
+}
+
+const processChartData = (data) => {
+    const workingData = {};
+    const brokenData = {};
+    const dateRange = [];
+
+    // Create a date range array for the last 14 days
+    for (let i = 0; i < 14; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateString = date.toISOString().split('T')[0];
+        dateRange.unshift(dateString);
+        workingData[dateString] = 0;
+        brokenData[dateString] = 0;
+    }
+
+    // Process data
+    data.forEach(entry => {
+        const date = entry.timestamp.split('T')[0];
+        if (date in workingData) {
+            if (entry.status === 'working') {
+                workingData[date]++;
+            } else if (entry.status === 'broken') {
+                brokenData[date]++;
+            }
+        }
+    });
+
+    // Prepare data for Chart.js
+    const workingCounts = dateRange.map(date => workingData[date]);
+    const brokenCounts = dateRange.map(date => brokenData[date]);
+
+    createChart(dateRange, workingCounts, brokenCounts);
+}
+
+const createChart = (labels, workingData, brokenData) => {
+    const ctx = document.createElement('canvas');
+    const mainChartDiv = document.getElementById('main-chart');
+    mainChartDiv.innerHTML = '';  // Clear any existing content
+    mainChartDiv.appendChild(ctx);  // Append the new canvas element
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Working Cameras',
+                    data: workingData,
+                    borderColor: 'green',
+                    fill: false
+                },
+                {
+                    label: 'Broken Cameras',
+                    data: brokenData,
+                    borderColor: 'red',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Cameras'
+                    }
+                }
+            }
+        }
+    });
+}
