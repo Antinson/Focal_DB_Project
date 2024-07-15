@@ -13,6 +13,8 @@
         display: inline-block;
         cursor: pointer;
         width: 200px; /* Fixed width for all select boxes */
+        color: #000000; /* Custom text color */
+        z-index: 10; /* Ensure select box is above the dropdown */
     }
 
     .over-select {
@@ -25,11 +27,14 @@
 
     .checkboxes {
         display: none;
-        border: 1px solid #dadada;
+        border: 1px solid #57575f; /* Custom border color */
         position: absolute;
         z-index: 1;
-        background: #fff;
+        background: #3b3b44; /* Custom background color */
         width: 100%;
+        color: #ffffff; /* Custom text color */
+        top: 100%; /* Position below the select box */
+        margin-top: 0.5rem; /* Small gap between select box and dropdown */
     }
 
     .checkboxes label {
@@ -39,16 +44,21 @@
     }
 
     .checkboxes label:hover {
-        background: #f0f0f0;
+        background: #57575f; /* Custom hover color */
+    }
+
+    .checkboxes input {
+        accent-color: #000000; /* Custom checkbox color */
     }
 </style>
 
 <div id="body-container" class="mx-auto p-4 flex-grow flex flex-col space-y-6 h-screen">
-    <div id="header-filters" class="flex space-x-4 bg-gray-100 p-4 rounded-lg shadow-md items-start">
+    <div id="header-filters" class="flex space-x-4 custom-background p-4 rounded-lg shadow-md items-start">
+        <img src="{{ url_for('static', filename='images/filter.svg') }}" alt="logo" class="h-16 ml-0 p-2">
         <div id="country-filter-container" class="flex flex-col multi-select">
-            <label class="mb-2 font-semibold text-gray-700">COUNTRY</label>
-            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="country-checkboxes">
-                <select class="w-full cursor-pointer border-none outline-none">
+            <label class="mb-2 font-semibold text-white">COUNTRY</label>
+            <div class="select-box rounded-md p-2" data-checkboxes-id="country-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none bg-transparent text-white">
                     <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
@@ -62,9 +72,9 @@
         </div>
 
         <div id="user-filter-container" class="flex flex-col multi-select">
-            <label class="mb-2 font-semibold text-gray-700">USER</label>
-            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="user-checkboxes">
-                <select class="w-full cursor-pointer border-none outline-none">
+            <label class="mb-2 font-semibold text-white">USER</label>
+            <div class="select-box rounded-md p-2" data-checkboxes-id="user-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none bg-transparent text-white">
                     <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
@@ -78,9 +88,9 @@
         </div>
 
         <div id="camera-type-filter-container" class="flex flex-col multi-select">
-            <label class="mb-2 font-semibold text-gray-700">CAMERA TYPE</label>
-            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="camera-type-checkboxes">
-                <select class="w-full cursor-pointer border-none outline-none">
+            <label class="mb-2 font-semibold text-white">CAMERA TYPE</label>
+            <div class="select-box rounded-md p-2" data-checkboxes-id="camera-type-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none bg-transparent text-white">
                     <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
@@ -94,9 +104,9 @@
         </div>
 
         <div id="camera-status-filter-container" class="flex flex-col multi-select">
-            <label class="mb-2 font-semibold text-gray-700">CAMERA STATUS</label>
-            <div class="select-box bg-white border border-gray-300 rounded-md p-2" data-checkboxes-id="camera-status-checkboxes">
-                <select class="w-full cursor-pointer border-none outline-none">
+            <label class="mb-2 font-semibold text-white">CAMERA STATUS</label>
+            <div class="select-box rounded-md p-2" data-checkboxes-id="camera-status-checkboxes">
+                <select class="w-full cursor-pointer border-none outline-none bg-transparent text-white">
                     <option value="">(ALL)</option>
                 </select>
                 <div class="over-select"></div>
