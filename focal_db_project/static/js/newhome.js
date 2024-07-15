@@ -141,12 +141,13 @@ function updateTable(filters) {
 
         cameras.forEach(camera => {
             const row = document.createElement('tr');
+            row.classList.add('table-row'); // Add the class for styling
             row.innerHTML = `
-                <td class="border px-4 py-2">${camera.camera_name}</td>
-                <td class="border px-4 py-2">${camera.camera_type}</td>
-                <td class="border px-4 py-2">${camera.camera_status}</td>
-                <td class="border px-4 py-2">${camera.camera_country}</td>
-                <td class="border px-4 py-2">${camera.camera_storage}</td>
+                <td class="table-cell border px-4 py-2">${camera.camera_name}</td>
+                <td class="table-cell border px-4 py-2">${camera.camera_type}</td>
+                <td class="table-cell border px-4 py-2">${camera.camera_status}</td>
+                <td class="table-cell border px-4 py-2">${camera.camera_country}</td>
+                <td class="table-cell border px-4 py-2">${camera.camera_storage}</td>
             `;
             tableBody.appendChild(row);
         });
@@ -188,6 +189,8 @@ function updateCounts(counts) {
 
 // DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
+    Chart.defaults.color = '#fff';
+    Chart.defaults.borderColor = '#27272E';
     const filters = [
         { id: 'country-filter-container', checkboxesId: 'country-checkboxes' },
         { id: 'user-filter-container', checkboxesId: 'user-checkboxes' },
@@ -321,7 +324,13 @@ const createChart = (labels, workingData) => {
     const mainChartDiv = document.getElementById('main-chart');
     mainChartDiv.innerHTML = '';  // Clear any existing content
     mainChartDiv.appendChild(ctx);  // Append the new canvas element
-    
+
+    // Determine the minimum and maximum values in the workingData to set custom y-axis bounds
+    const minWorkingDataValue = Math.min(...workingData);
+    const maxWorkingDataValue = Math.max(...workingData);
+    const yAxisMin = minWorkingDataValue > 0 ? minWorkingDataValue - 1 : 0; // Set the y-axis minimum a bit lower than the smallest data point
+    const yAxisMax = maxWorkingDataValue + 1; // Set the y-axis maximum a bit higher than the largest data point
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -333,7 +342,9 @@ const createChart = (labels, workingData) => {
                     borderColor: 'rgba(40, 153, 109, 0.9)',
                     backgroundColor: 'rgba(48, 185, 132, 0.1)', // Light green background for the line
                     tension: 0.1, // Smooth the line
-                    pointRadius: 0, // Hide points
+                    pointRadius: 0, // Hide points by default
+                    pointHoverRadius: 5, // Points on hover
+                    pointBackgroundColor: 'rgba(40, 153, 109, 0.9)', // Point color on hover
                 }
             ]
         },
@@ -346,24 +357,36 @@ const createChart = (labels, workingData) => {
                     },
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        color: '#fff' // White color for x-axis title
                     },
                     ticks: {
                         autoSkip: true,
-                        maxTicksLimit: 14
+                        maxTicksLimit: 14,
+                        color: '#fff' // White color for x-axis labels
+                    },
+                    grid: {
+                        color: '#27272E' // Darker grid color for better contrast
                     }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Working Cameras'
+                        text: 'Working Cameras',
+                        color: '#fff' // White color for y-axis title
                     },
                     beginAtZero: true,
+                    suggestedMin: yAxisMin, // Set the y-axis minimum
+                    suggestedMax: yAxisMax, // Set the y-axis maximum
                     ticks: {
                         stepSize: 1, // Ensure y-axis has whole numbers
                         callback: function(value) {
                             return Number.isInteger(value) ? value : null;
-                        }
+                        },
+                        color: '#fff' // White color for y-axis labels
+                    },
+                    grid: {
+                        color: '#27272E' // Darker grid color for better contrast
                     }
                 }
             },
@@ -372,15 +395,46 @@ const createChart = (labels, workingData) => {
                     display: false // Hide legend
                 },
                 tooltip: {
-                    enabled: true // Enable tooltips
+                    enabled: true, // Enable tooltips
+                    backgroundColor: 'rgba(40, 153, 109, 0.9)', // Background color of the tooltip
+                    titleColor: '#fff', // Title color of the tooltip
+                    bodyColor: '#fff', // Body color of the tooltip
+                    callbacks: {
+                        labelColor: function(context) {
+                            return {
+                                borderColor: 'rgba(40, 153, 109, 0.9)',
+                                backgroundColor: 'rgba(40, 153, 109, 0.9)'
+                            };
+                        }
+                    }
                 },
                 title: {
                     display: true,
-                    text: 'Working Cameras Over Time'
+                    text: 'Working Cameras Over Time',
+                    color: '#fff' // White color for chart title
+                },
+                datalabels: {
+                    display: false // Disable data labels
                 }
+            },
+            elements: {
+                point: {
+                    radius: 0 // Default point radius set to 0
+                },
+                line: {
+                    borderWidth: 2 // Line width
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                intersect: false,
+                axis: 'x'
             },
             responsive: true,
             maintainAspectRatio: false // Allow the chart to take the size of its container
-        }
+        },
+        plugins: [ChartDataLabels] // Include ChartDataLabels plugin
     });
 }
+
+
