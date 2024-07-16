@@ -14,7 +14,7 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
 @login_required
 def home():
-    return render_template('home.html', username=current_user.username, role=current_user.role)
+    return render_template('new_home.html', username=current_user.username, role=current_user.role)
 
 @main_bp.route('/user_dashboard/<username>')
 @login_required

@@ -43,8 +43,9 @@ def register_user():
             username = data.get('username').lower()
             password = data.get('password')
             role = data.get('role')
+            country = data.get('country')
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-            user = User(username=username, password=hashed_password, role=role)
+            user = User(username=username, password=hashed_password, role=role, country=country)
             services.add_user(user, current_app.repo)
             return jsonify({"message": "Creation successful"})
         except Exception as e:
