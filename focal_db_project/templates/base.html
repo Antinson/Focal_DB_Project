@@ -47,6 +47,9 @@
         <div class="mobile-menu hidden md:hidden">
             <a href="{{ url_for('main.home') }}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">Home</a>
             <a href="{{ url_for('main.add_camera_view') }}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">Add Camera</a>
+            {% if role == 'admin' %}
+            <a href="{{ url_for('auth.register_user') }}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">Register User</a>
+            {% endif %}
             <a href="{{ url_for('auth.logout') }}" class="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">Logout</a>
         </div>
     </nav>

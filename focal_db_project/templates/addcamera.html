@@ -2,7 +2,13 @@
 
 {% block content %}
 
-<div class="flex items-center flex-col my-4">
+<style>
+    .black-text {
+        color: black;
+    }
+</style>
+
+<div class="flex items-center flex-col my-4 black-text">
     <h1 class="text-4xl font-bold my-6 py-5">Add a Camera</h1>
     <div class="w-full max-w-xs">
         <input type="text" id="cameraid" placeholder="XX:XX:XX:XX:XX:XX" class="w-full p-3 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 py-2 px-2" pattern="^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$" required>
@@ -14,30 +20,36 @@
             <span id="toggleLabel" class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Working</span>
         </label>
     </div>
-    <div class="py-5">
-        <select name="camera_details" id="camera_type">
-            <option value="SE">Shelf Edge</option>
-            <option value="FM">Face Mount</option>
-            <option value="HM">Hanger Mount</option>
-            <option value="RM">Riser Mount</option>
-            <option value="WS">Wire Shelf</option>
-            <option value="SM">Stand Mount</option>
-            <option value="HH">Hammer Head Riser</option>
-            <option value="UM">Universal Mount</option>
-            <option value="CM">Clip Mount</option>
-            <option value="SC">Striding Cam</option>
-            <option value="BR">Backroom</option>
-        </select>
-        <select name="camera_details2" id="camera_fov">
-            <option value="21">FOV 21</option>
-            <option value="40">FOV 40</option>
-            <option value="60">FOV 60</option>
-            <option value="88">FOV 88</option>
-            <option value="110">FOV 110</option>
-            <option value="120">FOV 120</option>
-        </select>
+    <div class="py-5 flex flex-col sm:flex-row sm:gap-4 w-full max-w-xs">
+        <div class="flex-1">
+            <label for="camera_type" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Camera Type</label>
+            <select name="camera_details" id="camera_type" class="black-text mt-2 w-full">
+                <option value="SE">Shelf Edge</option>
+                <option value="FM">Face Mount</option>
+                <option value="HM">Hanger Mount</option>
+                <option value="RM">Riser Mount</option>
+                <option value="WS">Wire Shelf</option>
+                <option value="SM">Stand Mount</option>
+                <option value="HH">Hammer Head Riser</option>
+                <option value="UM">Universal Mount</option>
+                <option value="CM">Clip Mount</option>
+                <option value="SC">Striding Cam</option>
+                <option value="BR">Backroom</option>
+            </select>
+        </div>
+        <div class="flex-1 mt-4 sm:mt-0">
+            <label for="camera_fov" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Field of View</label>
+            <select name="camera_details2" id="camera_fov" class="black-text mt-2 w-full">
+                <option value="21">FOV 21</option>
+                <option value="40">FOV 40</option>
+                <option value="60">FOV 60</option>
+                <option value="88">FOV 88</option>
+                <option value="110">FOV 110</option>
+                <option value="120">FOV 120</option>
+            </select>
+        </div>
     </div>
-    <div id="messagePopup" class="hidden p-3 mt-2 text-sm text-white bg-blue-600 rounded-lg"></div>
+    <div id="messagePopup" class="black-text hidden p-3 mt-2 text-sm bg-blue-600 rounded-lg"></div>
 </div>
 
 <script>
@@ -57,8 +69,6 @@
         const label = document.getElementById('toggleLabel');
         return label.textContent;
     }
-
-
 
     function showMessage(message, isSuccess, color) {
         const popup = document.getElementById('messagePopup');
