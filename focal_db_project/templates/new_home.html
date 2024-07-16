@@ -76,6 +76,7 @@
 <div id="body-container" class="mx-auto p-4 flex-grow flex flex-col space-y-6 h-screen">
     <div id="header-filters" class="flex space-x-4 custom-background p-4 rounded-lg shadow-md items-start">
         <img src="{{ url_for('static', filename='images/filter.svg') }}" alt="logo" class="h-16 ml-0 p-2">
+        {% if role == 'admin' %}
         <div id="country-filter-container" class="flex flex-col multi-select">
             <label class="mb-2 font-semibold text-white">COUNTRY</label>
             <div class="select-box rounded-md p-2" data-checkboxes-id="country-checkboxes">
@@ -91,7 +92,8 @@
                 <!-- Additional country checkboxes will be added here by JavaScript -->
             </div>
         </div>
-
+        {% endif %}
+        {% if role == 'admin' %}
         <div id="user-filter-container" class="flex flex-col multi-select">
             <label class="mb-2 font-semibold text-white">USER</label>
             <div class="select-box rounded-md p-2" data-checkboxes-id="user-checkboxes">
@@ -107,7 +109,7 @@
                 <!-- Additional user checkboxes will be added here by JavaScript -->
             </div>
         </div>
-
+        {% endif %}
         <div id="camera-type-filter-container" class="flex flex-col multi-select">
             <label class="mb-2 font-semibold text-white">CAMERA TYPE</label>
             <div class="select-box rounded-md p-2" data-checkboxes-id="camera-type-checkboxes">

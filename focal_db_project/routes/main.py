@@ -84,8 +84,6 @@ def add_camera():
             services.add_camera(new_camera, current_app.repo)
             return jsonify({"success": True, "message": "Camera added", "cameraid": camera_name}), 201
     except Exception as e:
-        print('Theres an error')
-        print(f'Error: {e}')
         return jsonify({"success": False, "message": str(e)}), 500
 
 # Admin Stuff
@@ -237,9 +235,6 @@ def update_camera():
         camera_name = new_camera_values.get('camera_name')
         camera = services.get_camera_by_name(camera_name, current_app.repo)
 
-        print(camera.camera_type)
-
-
         if (camera.user_id == current_user.id or current_user.role == 'admin'):
             camera.status = new_camera_values.get('camera_status')
             camera.camera_type = new_camera_values.get('camera_type')
@@ -248,7 +243,6 @@ def update_camera():
             return jsonify({'message': 'update successful'})
         return jsonify({'message': 'update un-successful'})
     except Exception as e:
-        print(e)
         return jsonify({'message': 'Something went very wrong'})
 
 @main_bp.route('/camera-test', methods=['GET'])
@@ -273,7 +267,6 @@ def get_specific_camera():
         return jsonify(camera_data)
 
     except Exception as e:
-        print(e)
         return jsonify({'message': 'Something went very wrong'})
 
 @main_bp.route('/api/deletecamera', methods=['POST'])
@@ -288,17 +281,26 @@ def delete_camera():
     except Exception as e:
         return jsonify({'message': 'Something went wrong'})
 
+
 @main_bp.route('/test')
+@login_required
 def test():
     return render_template('new_home.html', role=current_user.role)
 
 
 @main_bp.route('/api/get-cameras-dash', methods=['POST'])
+@login_required
 def get_cameras_dash():
     # Get filter values from request
     data = request.json
-    countries = data.get('country', [])
-    users = data.get('user', [])
+
+    if current_user.role != 'admin':
+        countries = [current_user.country]
+        users = [current_user.username]
+    else:
+        countries = data.get('country', [])
+        users = data.get('user', [])
+    
     camera_types = data.get('cameraType', [])
     camera_statuses = data.get('cameraStatus', [])
 
@@ -321,10 +323,6 @@ def get_cameras_dash():
     broken = len([camera for camera in filtered_data if camera.status == 'broken'])
     working = total - broken
 
-    print(f'total {total}, broken {broken}, working {working}')
-    print(f'User filters: {user_filters}')
-    
-    print('')
     camera_data = [{
         'camera_name': camera.name,
         'camera_status': camera.status,
@@ -347,15 +345,22 @@ def get_cameras_dash():
 
     return jsonify(response)
 
+
 @main_bp.route('/api/get-filtered-options', methods=['POST'])
+@login_required
 def get_filtered_options():
     data = request.json
-    countries = data.get('country', [])
-    users = data.get('user', [])
+
+    if current_user.role != 'admin':
+        countries = [current_user.country]
+        users = [current_user.username]
+    else:
+        countries = data.get('country', [])
+        users = data.get('user', [])
+
     camera_types = data.get('cameraType', [])
     camera_statuses = data.get('cameraStatus', [])
 
-    print(f'Countries: {countries} \nUsers: {users} \nCamera Types: {camera_types} \nCamera Statuses: {camera_statuses}')
 
     user_filters = []
     if users:
@@ -380,17 +385,13 @@ def get_filtered_options():
 
 
 @main_bp.route('/api/get-timestamps', methods=['POST'])
+@login_required
 def get_timestamps_from_list():
-
-    print('In here')
     
     data = request.json
     camera_names = data.get('camera_names', [])
 
     camera_timestamps = services.get_camera_latest_timestamps_from_list(camera_names, current_app.repo)
-
-    print('Over here')
-
     response_data = [{'timestamp': ts.isoformat(), 'status': status} for ts, status in camera_timestamps]
 
     return jsonify(response_data)
