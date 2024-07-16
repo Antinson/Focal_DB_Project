@@ -50,7 +50,7 @@ def register_user():
         except Exception as e:
             print(e)
             return jsonify({"message": "Something went wrong"})
-    return render_template('register.html')
+    return render_template('register.html', role=current_user.role)
 
 @login_manager.unauthorized_handler
 def unauthorized():

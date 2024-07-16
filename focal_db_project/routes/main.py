@@ -44,7 +44,7 @@ def get_camera_counts_by_type(username):
 @main_bp.route('/addcamera')
 @login_required
 def add_camera_view():
-    return render_template('addcamera.html')
+    return render_template('addcamera.html', role=current_user.role)
 
 @main_bp.route('/pie/<username>', methods=['GET'])
 @login_required
@@ -220,13 +220,13 @@ def get_camera_user(username):
 @main_bp.route('/user-test/<username>', methods=['GET'])
 @login_required
 def user_test_page(username):
-    return render_template('my_cameras.html', user=username)
+    return render_template('my_cameras.html', user=username, role=current_user.role)
 
 
 @main_bp.route('/editcamera/<camera>', methods=['GET'])
 @login_required
 def edit_camera_test(camera):
-    return render_template('editcamera.html', camera=camera)
+    return render_template('editcamera.html', camera=camera, role=current_user.role)
 
 
 @main_bp.route('/api/updatecamera', methods=['POST'])
@@ -254,7 +254,7 @@ def update_camera():
 @main_bp.route('/camera-test', methods=['GET'])
 @login_required
 def camera_testing_update():
-    return render_template('editpage.html')
+    return render_template('editpage.html', role=current_user.role)
 
 @main_bp.route('/api/getspecificcamera', methods=['POST'])
 @login_required
@@ -290,7 +290,7 @@ def delete_camera():
 
 @main_bp.route('/test')
 def test():
-    return render_template('new_home.html')
+    return render_template('new_home.html', role=current_user.role)
 
 
 @main_bp.route('/api/get-cameras-dash', methods=['POST'])
