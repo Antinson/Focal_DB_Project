@@ -191,6 +191,11 @@ function updateCounts(counts) {
 document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.color = '#fff';
     Chart.defaults.borderColor = '#27272E';
+
+    const downloadButton = document.getElementById('download-button');
+    downloadButton.addEventListener('click', () => downloadTable(savedStates));
+
+
     const filters = [
         { id: 'country-filter-container', checkboxesId: 'country-checkboxes' },
         { id: 'user-filter-container', checkboxesId: 'user-checkboxes' },
@@ -437,4 +442,36 @@ const createChart = (labels, workingData) => {
     });
 }
 
+const downloadTable = (filters) => {
+
+    const url = '/api/download-table'
+
+    const { country, user, cameraType, cameraStatus } = filters;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(filters)
+    })
+    .then(async response => {
+        const contentDisposition = response.headers.get('Content-Disposition');
+        const filename = contentDisposition ? contentDisposition.split('filename=')[1].replace(/\"/g, '') : 'default_filename';
+        const blob = await response.blob();
+        return { blob, filename };
+    })
+    .then(({ blob, filename }) => { 
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename.replace(/\"/g, ''); // Remove any potential quotes around the filename
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+    .catch(error => console.error('Error downloading the file:', error));
+}
 

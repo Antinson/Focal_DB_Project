@@ -395,3 +395,73 @@ def get_timestamps_from_list():
     response_data = [{'timestamp': ts.isoformat(), 'status': status} for ts, status in camera_timestamps]
 
     return jsonify(response_data)
+
+@main_bp.route('/api/download-table', methods=['POST'])
+@login_required
+def download_table():
+    print("Download table endpoint reached")
+    data = request.json
+
+    if current_user.role != 'admin':
+        countries = [current_user.country]
+        users = [current_user.username]
+    else:
+        countries = data.get('country', [])
+        users = data.get('user', [])
+    
+    camera_types = data.get('cameraType', [])
+    camera_statuses = data.get('cameraStatus', [])
+
+    user_filters = []
+    if users:
+        for user in users:
+            user_obj = services.get_user_by_username(user, current_app.repo)
+            if user_obj:
+                user_filters.append(user_obj.id)
+
+    filtered_data = services.get_camera_by_filters(
+        repo=current_app.repo, 
+        user_ids=user_filters, 
+        countries=countries, 
+        camera_types=camera_types, 
+        camera_statuses=camera_statuses
+    )
+
+    camera_data = [{
+        'camera_name': camera.name,
+        'camera_status': camera.status,
+        'camera_user_id': camera.user_id,
+        'camera_storage': camera.storage,
+        'camera_type': camera.camera_type,
+        'camera_country': camera.user.country,
+    } for camera in filtered_data]
+
+    print("Filtered camera data:", camera_data)
+
+    try:
+        df = pd.DataFrame(camera_data)
+    except Exception as e:
+        print("Error creating DataFrame:", e)
+        return jsonify({"error": "Error creating DataFrame"}), 500
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output = io.BytesIO()
+
+    try:
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+    except Exception as e:
+        print("Error writing Excel file:", e)
+        return jsonify({"error": "Error writing Excel file"}), 500
+    
+    
+    output.seek(0)
+
+    try:
+        return send_file(output,
+                        download_name=f"focal_cameras_{timestamp}.xlsx",
+                        as_attachment=True,
+                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    except Exception as e:
+        print("Error sending file:", e)
+        return jsonify({"error": "Error sending file"}), 500
