@@ -7,9 +7,13 @@ let savedStates = {
 
 // Function definitions
 function showCheckboxes(checkboxesId) {
-    closeAllCheckboxes();
-    var checkboxes = document.getElementById(checkboxesId);
-    checkboxes.style.display = 'block';
+    const checkboxes = document.getElementById(checkboxesId);
+    if (checkboxes.style.display === 'block') {
+        checkboxes.style.display = 'none';
+    } else {
+        closeAllCheckboxes();
+        checkboxes.style.display = 'block';
+    }
 }
 
 function closeAllCheckboxes() {
@@ -20,7 +24,7 @@ function closeAllCheckboxes() {
 }
 
 function selectAll(checkboxesId, selectAllCheckbox) {
-    var checkboxes = document.querySelectorAll(`#${checkboxesId} .checkbox`);
+    const checkboxes = document.querySelectorAll(`#${checkboxesId} .checkbox`);
     checkboxes.forEach(checkbox => {
         checkbox.checked = selectAllCheckbox.checked;
     });
