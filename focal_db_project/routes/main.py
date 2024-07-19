@@ -75,12 +75,15 @@ def add_camera():
             if existing_camera.status != status or existing_camera.camera_type != camera_type:
                 existing_camera.status = status
                 existing_camera.camera_type = camera_type
+                camera_scan = CameraScan(camera_name = existing_camera.name, user_id = existing_camera.user_id, camera_status = existing_camera.status)
                 services.update_camera(existing_camera, current_app.repo)
+                services.add_camera_scan(camera_scan, current_app.repo)
                 return jsonify({"success": True, "message": "Camera updated", "cameraid": camera_name}), 200
             else:
                 return jsonify({"success": False, "message": "Camera already exists", "cameraid": camera_name}), 200
         else:
             new_camera = Camera(name = camera_name, status=status, user_id=current_user.id, storage=current_user.username, camera_type = camera_type)
+            camera_scan = CameraScan(camera_name = new_camera.name, user_id = new_camera.user_id, camera_status = new_camera.status)
             services.add_camera(new_camera, current_app.repo)
             return jsonify({"success": True, "message": "Camera added", "cameraid": camera_name}), 201
     except Exception as e:
@@ -465,3 +468,7 @@ def download_table():
     except Exception as e:
         print("Error sending file:", e)
         return jsonify({"error": "Error sending file"}), 500
+
+
+
+

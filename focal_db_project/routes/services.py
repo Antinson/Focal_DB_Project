@@ -109,3 +109,6 @@ def get_camera_latest_timestamps_from_list(camera_names: List[str], repo: Abstra
 
 def get_camera_timestamps_single(camera_name: str, repo: AbstractRepository) -> List[str]:
     return repo.get_camera_timestamps_single(camera_name)
+
+def add_camera_scan(camera_scan: CameraScan, repo: AbstractRepository):
+    return repo.add_camera_scan(camera_scan)

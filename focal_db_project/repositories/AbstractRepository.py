@@ -124,3 +124,7 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_camera_timestamps_single(self, camera_name: str) -> List[str]:
         raise NotImplementedError
+    
+    @abc.abstractmethod
+    def add_camera_scan(self, camera_scan: CameraScan):
+        raise NotImplementedError

@@ -303,3 +303,12 @@ class SQLAlchemyRepository(AbstractRepository):
             return [scan.timestamp for scan in scans]
         except Exception as e:
             raise RepositoryException(f"An error occurred while getting timestamps for camera {camera_name}: {e}")
+
+
+    def add_camera_scan(self, camera_scan: CameraScan):
+        try:
+            db.session.add(camera_scan)
+            db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise RepositoryException(f"An error occurred while adding the camera_scan: {e}")
