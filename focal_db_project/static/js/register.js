@@ -5,7 +5,8 @@ document.getElementById('registerForm').addEventListener('submit', function(even
     const data = {
         username: formData.get('username'),
         password: formData.get('password'),
-        role: formData.get('roles')
+        role: formData.get('roles'),
+        country: formData.get('country')
     };
 
     fetch('/register', {

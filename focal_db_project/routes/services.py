@@ -1,6 +1,6 @@
 from typing import List, Iterable
 from focal_db_project.repositories import AbstractRepository
-from focal_db_project.models import User, Camera, Notification
+from focal_db_project.models import User, Camera, Notification, CameraScan
 
 class NameNotUniqueException(Exception):
     pass
@@ -19,6 +19,7 @@ def get_user(user_id: int, repo: AbstractRepository):
     return repo.get_user(user_id)
 
 def get_user_by_username(username: str, repo: AbstractRepository):
+    username = username.lower()
     return repo.get_user_by_username(username)
 
 def get_user_list(repo: AbstractRepository):
@@ -88,4 +89,26 @@ def get_camera_by_user_paginate(user_id: int, repo: AbstractRepository, camera_t
     return repo.get_camera_by_user_paginate(user_id, camera_type, status, page, per_page)
 
 
+def get_camera_by_filters(repo: AbstractRepository, user_ids: List[int] = None, countries: List[str] = None, camera_types: List[str] = None, camera_statuses: List[str] = None):
+    return repo.get_camera_by_filters(user_ids, countries, camera_types, camera_statuses)
 
+def get_distinct_users(countries: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_users(countries)
+
+def get_distinct_camera_types(countries: List[str], user_ids: List[int], camera_statuses: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_camera_types(countries, user_ids, camera_statuses)
+
+def get_distinct_camera_statuses(countries: List[str], user_ids: List[int], camera_types: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_camera_statuses(countries, user_ids, camera_types)
+
+def get_distinct_countries(repo: AbstractRepository) -> List[str]:
+    return repo.get_distinct_countries()
+
+def get_camera_latest_timestamps_from_list(camera_names: List[str], repo: AbstractRepository) -> List[str]:
+    return repo.get_camera_latest_timestamps_from_list(camera_names)
+
+def get_camera_timestamps_single(camera_name: str, repo: AbstractRepository) -> List[str]:
+    return repo.get_camera_timestamps_single(camera_name)
+
+def add_camera_scan(camera_scan: CameraScan, repo: AbstractRepository):
+    return repo.add_camera_scan(camera_scan)

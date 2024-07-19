@@ -1,7 +1,8 @@
 from typing import List
 from sqlalchemy.exc import SQLAlchemyError
 from .AbstractRepository import AbstractRepository, RepositoryException
-from ..models import db, User, Camera, Notification
+from ..models import db, User, Camera, Notification, CameraScan
+from sqlalchemy.orm import joinedload
 
 class SQLAlchemyRepository(AbstractRepository):
 
@@ -184,3 +185,130 @@ class SQLAlchemyRepository(AbstractRepository):
             return paginated_query
         except SQLAlchemyError as e:
             raise RepositoryException(f"An error occurred while getting cameras by user paginate: {e}")
+    
+    def get_camera_by_filters(self, user_ids: List[int] = None, countries: List[str] = None, camera_types: List[str] = None, camera_statuses: List[str] = None):
+            try:
+                query = db.session.query(Camera).options(joinedload(Camera.user))
+
+                if user_ids:
+                    query = query.filter(Camera.user_id.in_(user_ids))
+                if countries:
+                    query = query.join(User).filter(User.country.in_(countries))
+                if camera_types:
+                    query = query.filter(Camera.camera_type.in_(camera_types))
+                if camera_statuses:
+                    query = query.filter(Camera.status.in_(camera_statuses))
+
+                cameras = query.all()
+                return cameras
+            except Exception as e:
+                raise RepositoryException(f"An error occurred while getting cameras by filters: {e}")
+
+    
+    def get_distinct_users(self, countries: list):
+        try:
+            query = db.session.query(User.username).distinct()
+            if countries:
+                query = query.filter(User.country.in_(countries))
+            users = [user[0] for user in query.all()]
+            return users
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting users by country: {e}")
+
+
+    
+    
+    def get_distinct_camera_types(self, countries: list, user_ids: list, camera_statuses: list):
+        try:
+            query = db.session.query(Camera.camera_type)
+            
+            if countries:
+                query = query.join(User).filter(User.country.in_(countries))
+            if user_ids:
+                query = query.filter(Camera.user_id.in_(user_ids))
+            if camera_statuses:
+                query = query.filter(Camera.status.in_(camera_statuses))
+
+            camera_types = query.distinct().all()
+            return [camera_type[0] for camera_type in camera_types]
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting camera types: {e}")
+
+
+ 
+    def get_distinct_camera_statuses(self, countries: list, user_ids: list, camera_types: list):
+        try:
+            query = db.session.query(Camera.status)
+
+            if countries:
+                query = query.join(User).filter(User.country.in_(countries))
+            if user_ids:
+                query = query.filter(Camera.user_id.in_(user_ids))
+            if camera_types:
+                query = query.filter(Camera.camera_type.in_(camera_types))
+
+            found_statuses = set()
+            for camera in query.distinct().all():
+                found_statuses.add(camera.status)
+                if 'broken' in found_statuses and 'working' in found_statuses:
+                    break
+            
+            print(f"Returning statuses: {found_statuses}")  # Debug statement to print found statuses
+
+            return list(found_statuses)
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting camera statuses: {e}")
+
+    
+    def get_distinct_countries(self):
+        try:
+            query = db.session.query(User.country).distinct()
+            countries = [country[0] for country in query.all()]
+            return countries
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting countries: {e}")
+
+    def get_camera_latest_timestamps_from_list(self, camera_names: List[str]) -> List[str]:
+        try:
+            # Fetch the latest scans for the provided camera names in a single query
+            subquery = (
+                db.session.query(
+                    CameraScan.camera_name,
+                    db.func.max(CameraScan.timestamp).label("latest_timestamp")
+                )
+                .filter(CameraScan.camera_name.in_(camera_names))
+                .group_by(CameraScan.camera_name)
+                .subquery()
+            )
+
+            latest_scans = (
+                db.session.query(CameraScan.timestamp, CameraScan.camera_status)
+                .join(subquery, db.and_(
+                    CameraScan.camera_name == subquery.c.camera_name,
+                    CameraScan.timestamp == subquery.c.latest_timestamp
+                ))
+                .all()
+            )
+
+            # Process the results
+            result = [(scan.timestamp, scan.camera_status) for scan in latest_scans]
+            return result
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting latest timestamps: {e}")
+
+
+    def get_camera_timestamps_single(self, camera_name: str) -> List[str]:
+        try:
+            scans = db.session.query(CameraScan).filter_by(camera_name=camera_name).order_by(CameraScan.timestamp.desc()).all()
+            return [scan.timestamp for scan in scans]
+        except Exception as e:
+            raise RepositoryException(f"An error occurred while getting timestamps for camera {camera_name}: {e}")
+
+
+    def add_camera_scan(self, camera_scan: CameraScan):
+        try:
+            db.session.add(camera_scan)
+            db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise RepositoryException(f"An error occurred while adding the camera_scan: {e}")

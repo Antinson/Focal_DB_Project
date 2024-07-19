@@ -1,6 +1,6 @@
 import abc
 from typing import List
-from focal_db_project.models import User, Camera, Notification
+from focal_db_project.models import User, Camera, Notification, CameraScan
 
 
 class RepositoryException(Exception):
@@ -97,3 +97,34 @@ class AbstractRepository(abc.ABC):
     def get_camera_by_user_paginate(self, user_id: int, camera_type: str = None, status: str = None, page: int = 1, per_page: int = 5):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_camera_by_filters(self, user_ids: List[int] = None, countries: List[str] = None, camera_types: List[str] = None, camera_statuses: List[str] = None):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_distinct_users(self, countries: List[str]) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_distinct_camera_types(self, countries: List[str], user_ids: List[int], camera_statuses: List[str]) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_distinct_camera_statuses(self, countries: List[str], user_ids: List[int], camera_types: List[str]) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_distinct_countries(self) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_latest_timestamps_from_list(self, camera_names: List[str]) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def get_camera_timestamps_single(self, camera_name: str) -> List[str]:
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def add_camera_scan(self, camera_scan: CameraScan):
+        raise NotImplementedError
