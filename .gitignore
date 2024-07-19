@@ -14,3 +14,4 @@ focal_db_project/repositories/__pycache__/SQLAlchemyRepository.cpython-310.pyc
 /focal_db_project/repositories/__pycache__
 *.pyc
 .env
+scripts.py

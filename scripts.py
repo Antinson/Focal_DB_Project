@@ -40,54 +40,11 @@ def add_random_timestamps_to_cameras(username):
     db.session.commit()
     print(f"Random timestamps added to cameras for user {username} successfully.")
 
-def add_cameras_to_test_accounts():
-    # Read camera MAC addresses and add to the test accounts
-    with open('nz_mac_address.txt', 'r') as file:
-        nz_mac_addresses = file.read().splitlines()
-    
-    with open('au_mac_address.txt', 'r') as file:
-        au_mac_addresses = file.read().splitlines()
-
-    nz_user = User.query.filter_by(username='nz_user_test').first()
-    au_user = User.query.filter_by(username='au_user_test').first()
-
-    if not nz_user or not au_user:
-        print("One or both test users not found.")
-        return
-
-    for mac_address in nz_mac_addresses:
-        camera = Camera(name=mac_address, user_id=nz_user.id, status=random_status(), storage='nz_user_test', camera_type=random_camera_type())
-        db.session.add(camera)
-    
-    for mac_address in au_mac_addresses:
-        camera = Camera(name=mac_address, user_id=au_user.id, status=random_status(), storage='au_user_test', camera_type=random_camera_type())
-        db.session.add(camera)
-
-    db.session.commit()
-    print("Cameras added to test accounts successfully.")
-
-def random_status():
-    return random.choice(['working', 'broken'])
-
-def random_camera_type():
-    camera_types = ['FM-21', 'FM-88', 'SE-88', 'FM-62', 'FM-40']
-    return random.choice(camera_types)
-
-def update_camera_types():
-    app = create_app()
-    with app.app_context():
-        # Query cameras with null type
-        cameras = Camera.query.filter(Camera.camera_type.is_(None)).all()
-
-        # Update camera types
-        for camera in cameras:
-            camera.type = random_camera_type()
-            db.session.add(camera)
-        
-        # Commit changes
-        db.session.commit()
-        print(f"Updated {len(cameras)} cameras with random types.")
+def update_user():
+    pass
 
 
 if __name__ == "__main__":
-    update_camera_types()
+    app = create_app()
+    with app.app_context():
+        update_user()
